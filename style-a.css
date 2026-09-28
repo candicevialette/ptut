@@ -2658,3 +2658,94 @@ html {
   flex-direction: column;
   justify-content: space-between; /* Calfeutre le header en haut et la barre de bas en bas */
 }
+/* Section Gestion des utilisateurs */
+#users .dashheading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.userspanel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow-x: auto;
+}
+
+.userstable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.userstable th {
+    padding: 14px 16px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.userstable td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #1e293b;
+}
+
+.userstable tr:last-child td {
+    border-bottom: none;
+}
+
+.userstable small {
+    color: #64748b;
+}
+
+/* Badges de rôle */
+.rolebadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.rolebadge.admin { background: #e0e7ff; color: #3730a3; }
+.rolebadge.operator { background: #e0f2fe; color: #0369a1; }
+.rolebadge.readonly { background: #f1f5f9; color: #475569; }
+
+/* Badges de statut */
+.statusbadge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.statusbadge.active { background: #dcfce7; color: #15803d; }
+.statusbadge.inactive { background: #fee2e2; color: #b91c1c; }
+
+/* Boutons d'action */
+.userstable button.textlink {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 14px;
+    color: #334155;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.userstable button.textlink:hover {
+    background: #f8fafc;
+    border-color: #394799;
+    color: #394799;
+}
