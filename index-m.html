@@ -3,16 +3,16 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta name="description" content="nodus, votre espace d’administration réseau. Maquette interactive de console multi-équipements.">
-        <title>Nodus</title>
+        <meta name="description" content="Nodus, votre espace d’administration réseau. Maquette interactive de console multi-équipements.">
+        <title>Nodus — Console réseau</title>
         <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23394799'/%3E%3Cpath d='M7 23 16 8l9 15M11 18h10' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
-        <link rel="stylesheet" href="style-m.css">
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <div id="home">
             <div class="homehero">
                 <header class="homenav">
-                    <a class="brand" href="#home" aria-label="nodus, accueil">
+                    <a class="brand" href="#home" aria-label="Nodus, accueil">
                         <span class="brandmark">a</span>
                         Nodus<span class="brandperiod">.</span>
                     </a>
@@ -22,7 +22,8 @@
                     </span>
                     <nav aria-label="Navigation principale">
                         <a href="#presentation">Notre approche</a>
-                        <a href="#equipements">Les équipements</a>
+                        <a href="#marques">Les marques</a>
+                        <a href="#equipements">Les services</a>
                         <a class="homebutton small" href="http://IP_DE_TON_PVE/">
                             Téléchargement <span>↗</span>
                         </a>
@@ -35,7 +36,8 @@
                         <em>la simplicité qu’il mérite.</em>
                     </h1>
                     <p class="herodescription">
-                        Centralisez vos équipements, gardez une vue d’ensemble<br class="desktopbreak"> et passez à l’action depuis une seule interface. </p>
+                        Centralisez vos équipements, gardez une vue d’ensemble<br class="desktopbreak"> et passez à l’action depuis une seule interface.
+                    </p>
                     <div class="heroactions">
                         <a class="homebutton" href="http://IP_DE_TON_PVE/">
                             Découvrir Nodus <span>↗</span>
@@ -44,7 +46,7 @@
                             Explorer Nodus <span>↓</span>
                         </a>
                     </div>
-                    </section>
+                </section>
                 <div class="herobottom">
                     <span>CONÇU POUR LES ADMINISTRATEURS RÉSEAU</span>
                     <span>
@@ -54,16 +56,16 @@
                     </span>
                 </div>
             </div>
-            <section class="homeintro homewidth" id="presentation">
+            <section class="homeintro homewidth" id="equipe">
                 <div>
-                    <p class="homeeyebrow">Equipe</p>
+                    <p class="homeeyebrow">ÉQUIPE</p>
                     <h2>
                         Présentation de notre projet
                     </h2>
                 </div>
                 <div>
-                    <p>Présentation de l'équipe</p>
-                    <p>présentation de notre projet</p>
+                    <p>Présentation de l’équipe.</p>
+                    <p>Présentation de notre projet.</p>
                     <a class="textlink" href="http://IP_DE_TON_PVE/">
                         Prendre en main la démo <span>↗</span>
                     </a>
@@ -78,8 +80,26 @@
                 </div>
                 <div>
                     <p>Votre infrastructure rassemble des équipements différents. Leur administration mérite un espace commun.</p>
-                    <p>nodus réunit la liste de vos équipements, leurs informations essentielles et une console dans la même interface. Sélectionnez un appareil, retrouvez son adresse et ouvrez sa session.</p>
-                   </div>
+                    <p>Nodus réunit la liste de vos équipements, leurs informations essentielles et une console dans la même interface. Sélectionnez un appareil, retrouvez son adresse et ouvrez sa session.</p>
+                </div>
+            </section>
+            <section class="homebrands homewidth" id="marques">
+                <div class="sectionheading">
+                    <p class="homeeyebrow">COMPATIBILITÉ MULTI-CONSTRUCTEURS</p>
+                    <h2>Équipements pris en charge</h2>
+                    <p>Nodus s’intègre avec les principaux équipements du marché.</p>
+                </div>
+                <div class="brandsgrid">
+                    <div class="brandcard">
+                        <img src="logos/cisco.svg" alt="Cisco" loading="lazy">
+                    </div>
+                    <div class="brandcard">
+                        <img src="logos/stormshield.svg" alt="Stormshield" loading="lazy">
+                    </div>
+                    <div class="brandcard">
+                        <img src="logos/mikrotik.svg" alt="MikroTik" loading="lazy">
+                    </div>
+                </div>
             </section>
             <section class="homeequipment" id="equipements">
                 <div class="homewidth">
@@ -167,9 +187,14 @@
                 <a class="homebutton" href="http://IP_DE_TON_PVE/">
                     Essayer Nodus <span>↗</span>
                 </a>
-                <p class="ctanote">Nodus, tout droits réservé</p>
-                <a href="#home">Retour en haut ↑</a>
             </section>
+            <footer class="homefooter homewidth">
+                <a class="brand" href="#home">
+                    Nodus<span class="brandperiod">.</span>
+                </a>
+                <p>© Nodus — Tous droits réservés.</p>
+                <a href="#home">Retour en haut ↑</a>
+            </footer>
         </div>
     </body>
 </html>
