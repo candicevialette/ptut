@@ -2648,4 +2648,13 @@ html {
         margin-top: 15px;
         margin-bottom: 12px
     }
+
+}
+
+.homehero {
+  min-height: 100vh; /* Force la hauteur minimale à 100 % de l'écran */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Calfeutre le header en haut et la barre de bas en bas */
 }
