@@ -6,8 +6,8 @@
         <meta name="description" content="Nodus, votre espace d’administration réseau. Maquette interactive de console multi-équipements.">
         <title>Nodus — Console réseau</title>
         <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23394799'/%3E%3Cpath d='M7 23 16 8l9 15M11 18h10' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
-        <link rel="stylesheet" href="style.css">
-        <script src="app-a.js" defer></script>
+        <link rel="stylesheet" href="style-a.css">
+        <script src="app.js" defer></script>
     </head>
     <body>
         <div id="administration">
@@ -18,9 +18,9 @@
                 </a>
                 <nav class="workspace" aria-label="Fil d’Ariane">
                     Administration <span>/</span>
-                    <span id="breadcrumbType">Routeurs</span>
+                    <span id="breadcrumbType">Tableau de bord</span>
                     <span>/</span>
-                    <strong id="breadcrumbDevice">RT-CORE-01</strong>
+                    <strong id="breadcrumbDevice">Vue d’ensemble</strong>
                 </nav>
                 <div class="topright">
                     <span class="demo">
@@ -38,9 +38,14 @@
                             Équipements <span id="sidebarTotal"></span>
                         </h2>
                     </div>
-                    <a class="dashboardlink" href="#dashboard">
-                        Tableau de bord <span>↗</span>
-                    </a>
+                    <nav class="sidenav" aria-label="Navigation principale admin">
+                        <a class="dashboardlink" href="#dashboard">
+                            Tableau de bord <span>↗</span>
+                        </a>
+                        <a class="dashboardlink" href="#users">
+                            Gestion des utilisateurs <span>↗</span>
+                        </a>
+                    </nav>
                     <nav id="devices" aria-label="Équipements réseau"></nav>
                     <div class="sidebarfooter">
                         <span class="tinylogo">a.</span>
@@ -48,6 +53,7 @@
                     </div>
                 </aside>
                 <main>
+                    <!-- Section Tableau de bord -->
                     <section id="dashboard" hidden aria-labelledby="dashboardTitle">
                         <div class="dashheading">
                             <div>
@@ -71,6 +77,64 @@
                             </section>
                         </div>
                     </section>
+
+                    <!-- Section Gestion des utilisateurs -->
+                    <section id="users" hidden aria-labelledby="usersTitle">
+                        <div class="dashheading">
+                            <div>
+                                <p class="eyebrow">SÉCURITÉ ET DROITS</p>
+                                <h1 id="usersTitle">Gestion des utilisateurs</h1>
+                            </div>
+                            <button class="primary" type="button">+ Ajouter un utilisateur</button>
+                        </div>
+                        <div class="userspanel">
+                            <table class="userstable">
+                                <thead>
+                                    <tr>
+                                        <th>Utilisateur</th>
+                                        <th>Rôle &amp; Droits</th>
+                                        <th>Statut</th>
+                                        <th>Dernière connexion</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Admin Système</strong><br>
+                                            <small>admin@nodus.local</small>
+                                        </td>
+                                        <td><span class="rolebadge admin">Super Admin</span></td>
+                                        <td><span class="statusbadge active">Actif</span></td>
+                                        <td>Aujourd'hui, 11:42</td>
+                                        <td><button class="textlink" type="button">Éditer</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Technicien Réseau</strong><br>
+                                            <small>tech@nodus.local</small>
+                                        </td>
+                                        <td><span class="rolebadge operator">Opérateur</span></td>
+                                        <td><span class="statusbadge active">Actif</span></td>
+                                        <td>Hier, 16:15</td>
+                                        <td><button class="textlink" type="button">Éditer</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Auditeur Sécurité</strong><br>
+                                            <small>audit@nodus.local</small>
+                                        </td>
+                                        <td><span class="rolebadge readonly">Lecture seule</span></td>
+                                        <td><span class="statusbadge inactive">Inactif</span></td>
+                                        <td>Il y a 5 jours</td>
+                                        <td><button class="textlink" type="button">Éditer</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Section Console -->
                     <div id="consoleview">
                         <section class="devicecard" aria-labelledby="deviceName">
                             <div class="deviceidentity">
@@ -154,9 +218,6 @@
                                 <kbd>↑</kbd>
                                 historique
                             </span>
-                            <a class="dashboardlink" href="#dashboard">
-                        Gestion des utilisateurs <span>↗</span>
-                    </a>
                         </div>
                         <footer class="mainfooter">
                             <span>Conçu pour garder le contrôle.</span>
