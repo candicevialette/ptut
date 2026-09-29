@@ -58,7 +58,8 @@ let selected = devices[0]
   , connected = false
   , history = []
   , historyIndex = 0;
-const $= id => document.getElementById(id);$('devices').innerHTML = groups.map( ([type,title]) => `<details open><summary>${title}<span class="count">${devices.filter(d => d.type === type).length}</span><span class="chevron" aria-hidden="true"></span></summary>${devices.filter(d => d.type === type).map(d => `<button class="devicebutton" data-id="${d.id}" aria-pressed="false">${d.name}</button>`).join('')}</details>`).join('');
+const $ = id => document.getElementById(id);
+$('devices').innerHTML = groups.map( ([type,title]) => `<details open><summary>${title}<span class="count">${devices.filter(d => d.type === type).length}</span><span class="chevron" aria-hidden="true"></span></summary>${devices.filter(d => d.type === type).map(d => `<button class="devicebutton" data-id="${d.id}" aria-pressed="false">${d.name}</button>`).join('')}</details>`).join('');
 document.querySelectorAll('.devicebutton').forEach(b => b.addEventListener('click', () => {
     selectDevice(b.dataset.id);
     location.hash = 'console';
@@ -74,13 +75,16 @@ function selectDevice(id) {
     history = [];
     historyIndex = 0;
     $('log').replaceChildren();
-    $('command').value = '';$('deviceName').textContent = d.name;
-    $('deviceType').textContent = groups.find(g => g[0] === d.type)[2];$('deviceIp').textContent = d.ip;
+    $('command').value = '';
+    $('deviceName').textContent = d.name;
+    $('deviceType').textContent = groups.find(g => g[0] === d.type)[2];
+    $('deviceIp').textContent = d.ip;
     $('bottomIp').textContent = d.ip;
     $('deviceModel').textContent = d.brand + ' ' + d.model;
     $('terminalName').textContent = d.name;
     $('breadcrumbDevice').textContent = d.name;
-    $('breadcrumbType').textContent = groups.find(g => g[0] === d.type)[1];$('prompt').textContent = d.name.toLowerCase() + ' #';
+    $('breadcrumbType').textContent = groups.find(g => g[0] === d.type)[1];
+    $('prompt').textContent = d.name.toLowerCase() + ' #';
     document.querySelectorAll('.devicebutton').forEach(b => {
         b.classList.toggle('selected', b.dataset.id === id);
         b.setAttribute('aria-pressed', String(b.dataset.id === id))
@@ -97,7 +101,8 @@ function selectDevice(id) {
 function updateConnection() {
     $('connect').innerHTML = connected ? 'Déconnecter <span>↗</span>' : 'Connecter <span>↗</span>';
     $('bottomState').textContent = connected ? 'Connecté · démonstration' : 'Prêt à se connecter';
-    $('statusDot').classList.toggle('active', connected);$('commandForm').hidden = !connected;
+    $('statusDot').classList.toggle('active', connected);
+    $('commandForm').hidden = !connected;
     document.querySelector('.terminalwelcome').hidden = connected || $('log').childElementCount > 0
 }
 function line(text, cls='') {
@@ -105,7 +110,7 @@ function line(text, cls='') {
     el.className = 'logline ' + cls;
     el.textContent = text;
     $('log').append(el);
-    $('terminalBody').scrollTop =$('terminalBody').scrollHeight
+    $('terminalBody').scrollTop = $('terminalBody').scrollHeight
 }
 function toggleConnection() {
     connected = !connected;
@@ -125,7 +130,8 @@ function toggleConnection() {
         $('command').focus()
 }
 $('connect').addEventListener('click', toggleConnection);
-$('clear').addEventListener('click', () => {$('log').replaceChildren();
+$('clear').addEventListener('click', () => {
+    $('log').replaceChildren();
     updateConnection();
     if (connected)
         $('command').focus()
@@ -140,7 +146,8 @@ $('expand').addEventListener('click', () => {
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
         document.querySelector('.console').classList.remove('expanded');
-        $('expand').setAttribute('aria-label', 'Agrandir la console');$('expand').title = 'Agrandir la console'
+        $('expand').setAttribute('aria-label', 'Agrandir la console');
+        $('expand').title = 'Agrandir la console'
     }
 }
 );
@@ -186,7 +193,7 @@ $('commandForm').addEventListener('submit', e => {
     const c = $('command').value;
     $('command').value = '';
     runCommand(c);
-    $('terminalBody').scrollTop =$('terminalBody').scrollHeight
+    $('terminalBody').scrollTop = $('terminalBody').scrollHeight
 }
 );
 $('command').addEventListener('keydown', e => {
@@ -198,6 +205,36 @@ $('command').addEventListener('keydown', e => {
 }
 );
 selectDevice(selected.id);
+if (document.modelContext?.registerTool) {
+    try {
+        Promise.resolve(document.modelContext.registerTool({
+            name: 'select_demo_device',
+            title: 'Sélectionner un équipement de démonstration',
+            description: 'Sélectionne un équipement fictif dans la console et ferme la session simulée précédente.',
+            inputSchema: {
+                type: 'object',
+                properties: {
+                    id: {
+                        type: 'string',
+                        enum: devices.map(d => d.id)
+                    }
+                },
+                required: ['id'],
+                additionalProperties: false
+            },
+            annotations: {
+                readOnlyHint: false,
+                untrustedContentHint: false
+            },
+            execute: input => {
+                if (!input || typeof input.id !== 'string' || Object.keys(input).some(k => k !== 'id'))
+                    throw new Error('Identifiant invalide');
+                return selectDevice(input.id)
+            }
+        })).catch( () => {}
+        );
+    } catch {}
+}
 
 function renderDashboard() {
     const total = devices.length;
@@ -218,61 +255,41 @@ function renderDashboard() {
     ));
 }
 function showRoute() {
-    const dash = location.hash === '#dashboard' || !location.hash;
+    const dash = location.hash === '#dashboard';
     const consolePage = location.hash === '#console';
+    const admin = dash || consolePage;
+    $('home').hidden = admin;
+    $('administration').hidden = !admin;
     $('dashboard').hidden = !dash;
     $('consoleview').hidden = !consolePage;
     document.querySelector('.dashboardlink').setAttribute('aria-current', dash ? 'page' : 'false');
     $('breadcrumbType').textContent = dash ? 'Tableau de bord' : groups.find(g => g[0] === selected.type)[1];
     $('breadcrumbDevice').textContent = dash ? 'Vue d’ensemble' : selected.name;
-    document.title = dash ? 'Azur — Tableau de bord' : 'Azur — Console réseau';
-    window.scrollTo(0, 0);
+    document.title = dash ? 'Azur — Tableau de bord' : consolePage ? 'Azur — Console réseau' : 'Azur — Tout votre réseau, un seul espace';
+    if (admin || !location.hash || location.hash === '#accueil')
+        window.scrollTo(0, 0);
 }
 renderDashboard();
 window.addEventListener('hashchange', showRoute);
 showRoute();
 
-function showRoute() {
-    const hash = location.hash || '#dashboard';
-    const isDash = hash === '#dashboard';
-    const isUsers = hash === '#users';
-    const isConsole = hash === '#console';
+document.addEventListener('DOMContentLoaded', () => {
+    const avatarBtn = document.getElementById('avatarBtn');
+    const profileMenu = document.getElementById('profileMenu');
 
-    $('dashboard').hidden = !isDash;
-    if ($('users')) $('users').hidden = !isUsers;
-    $('consoleview').hidden = !isConsole;
+    if (avatarBtn && profileMenu) {
+        avatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = profileMenu.hidden;
+            profileMenu.hidden = !isHidden;
+            avatarBtn.setAttribute('aria-expanded', !isHidden);
+        });
 
-    if (isDash) {
-        $('breadcrumbType').textContent = 'Tableau de bord';
-        $('breadcrumbDevice').textContent = 'Vue d’ensemble';
-    } else if (isUsers) {
-        $('breadcrumbType').textContent = 'Sécurité';
-        $('breadcrumbDevice').textContent = 'Gestion des utilisateurs';
-    } else {
-        $('breadcrumbType').textContent = groups.find(g => g[0] === selected.type)[1];
-        $('breadcrumbDevice').textContent = selected.name;
+        document.addEventListener('click', (e) => {
+            if (!profileMenu.contains(e.target) && e.target !== avatarBtn) {
+                profileMenu.hidden = true;
+                avatarBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
     }
-    window.scrollTo(0, 0);
-}
-function showRoute() {
-    const hash = location.hash || '#dashboard';
-    const isDash = hash === '#dashboard';
-    const isUsers = hash === '#users';
-    const isConsole = hash === '#console';
-
-    $('dashboard').hidden = !isDash;
-    if ($('users')) $('users').hidden = !isUsers;
-    $('consoleview').hidden = !isConsole;
-
-    if (isDash) {
-        $('breadcrumbType').textContent = 'Tableau de bord';
-        $('breadcrumbDevice').textContent = 'Vue d’ensemble';
-    } else if (isUsers) {
-        $('breadcrumbType').textContent = 'Sécurité';
-        $('breadcrumbDevice').textContent = 'Gestion des utilisateurs';
-    } else {
-        $('breadcrumbType').textContent = groups.find(g => g[0] === selected.type)[1];
-        $('breadcrumbDevice').textContent = selected.name;
-    }
-    window.scrollTo(0, 0);
-}
+});
