@@ -254,3 +254,25 @@ function showRoute() {
     }
     window.scrollTo(0, 0);
 }
+function showRoute() {
+    const hash = location.hash || '#dashboard';
+    const isDash = hash === '#dashboard';
+    const isUsers = hash === '#users';
+    const isConsole = hash === '#console';
+
+    $('dashboard').hidden = !isDash;
+    if ($('users')) $('users').hidden = !isUsers;
+    $('consoleview').hidden = !isConsole;
+
+    if (isDash) {
+        $('breadcrumbType').textContent = 'Tableau de bord';
+        $('breadcrumbDevice').textContent = 'Vue d’ensemble';
+    } else if (isUsers) {
+        $('breadcrumbType').textContent = 'Sécurité';
+        $('breadcrumbDevice').textContent = 'Gestion des utilisateurs';
+    } else {
+        $('breadcrumbType').textContent = groups.find(g => g[0] === selected.type)[1];
+        $('breadcrumbDevice').textContent = selected.name;
+    }
+    window.scrollTo(0, 0);
+}
