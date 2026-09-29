@@ -325,3 +325,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Gestion du menu Profil (Macaron AD)
+    const avatarBtn = document.getElementById('avatarBtn');
+    const profileMenu = document.getElementById('profileMenu');
+
+    if (avatarBtn && profileMenu) {
+        avatarBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Empêche le clic de fermer le menu immédiatement
+            const isHidden = profileMenu.hidden;
+            profileMenu.hidden = !isHidden; // Alterne l'affichage
+            avatarBtn.setAttribute('aria-expanded', !isHidden);
+        });
+
+        // Fermer le menu si on clique n'importe où ailleurs sur la page
+        document.addEventListener('click', (e) => {
+            if (!profileMenu.contains(e.target) && e.target !== avatarBtn) {
+                profileMenu.hidden = true;
+                avatarBtn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // 2. Empêcher le rechargement de page quand on change le mot de passe
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Mot de passe mis à jour avec succès ! (Simulation)');
+            profileMenu.hidden = true; // Ferme le menu après validation
+        });
+    }
+});
