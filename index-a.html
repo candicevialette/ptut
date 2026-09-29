@@ -1,1 +1,325 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="description" content="Nodus, votre espace d’administration réseau. Maquette interactive de console multi-équipements.">
+        <title>Nodus — Console réseau</title>
+        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23394799'/%3E%3Cpath d='M7 23 16 8l9 15M11 18h10' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+        <link rel="stylesheet" href="style-a.css">
+        <script src="app-a.js" defer></script>
+    </head>
+    <body>
+        <div id="administration">
+            <header class="topbar">
+                <a class="brand" href="#dashboard" aria-label="Nodus, accueil">
+                    <span class="brandmark">a</span>
+                    Nodus<span class="brandperiod">.</span>
+                </a>
+                <nav class="workspace" aria-label="Fil d’Ariane">
+                    Administration <span>/</span>
+                    <span id="breadcrumbType">Tableau de bord</span>
+                    <span>/</span>
+                    <strong id="breadcrumbDevice">Vue d’ensemble</strong>
+                </nav>
+                <div class="topright">
+                    <span class="demo">
+                        <span></span>
+                        Mode administration
+                    </span>
+                    
+                    <!-- Menu Profil / AD avec Popover -->
+                    <div class="userprofile">
+                        <button type="button" class="avatar" id="avatarBtn" aria-expanded="false" aria-controls="profileMenu" title="Espace administrateur">AD</button>
+                        
+                        <div class="profilepopover" id="profileMenu" hidden>
+                            <div class="popoverheader">
+                                <span class="userbadge">Super Admin</span>
+                                <h3>Alex Dupont</h3>
+                                <p>alex.dupont@nodus.local</p>
+                            </div>
+                            <div class="popoverdetails">
+                                <div class="detailrow">
+                                    <span>Rôle :</span>
+                                    <strong>Administrateur Système</strong>
+                                </div>
+                                <div class="detailrow">
+                                    <span>Droits :</span>
+                                    <strong>Accès complet (RW)</strong>
+                                </div>
+                            </div>
+                            <hr class="popoverdivider">
+                            <form id="changePasswordForm" class="passform">
+                                <h4>Changer le mot de passe</h4>
+                                <div class="fieldgroup">
+                                    <label for="currentPass">Mot de passe actuel</label>
+                                    <input type="password" id="currentPass" required placeholder="••••••••">
+                                </div>
+                                <div class="fieldgroup">
+                                    <label for="newPass">Nouveau mot de passe</label>
+                                    <input type="password" id="newPass" required placeholder="••••••••">
+                                </div>
+                                <button type="submit" class="primary btnblock">Mettre à jour</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
+            <div class="layout">
+                <aside class="sidebar">
+                    <div class="sideintro">
+                        <span class="eyebrow">NOM DE L’ENTREPRISE</span>
+                        <h2>
+                            Équipements <span id="sidebarTotal"></span>
+                        </h2>
+                    </div>
+                    <nav class="sidenav" aria-label="Navigation principale admin">
+                        <a class="dashboardlink" href="#dashboard">
+                            Tableau de bord <span>↗</span>
+                        </a>
+                        <a class="dashboardlink" href="#users">
+                            Gestion des utilisateurs <span>↗</span>
+                        </a>
+                    </nav>
+
+                    <!-- Équipements générés dynamiquement par app-a.js -->
+                    <nav id="devices" aria-label="Équipements réseau"></nav>
+
+                    <!-- Section Marques dans le menu latéral -->
+                    <div class="navgroup">
+                        <div class="navgrouptitle">
+                            <span>Marques</span>
+                            <span class="count">3 ˅</span>
+                        </div>
+                        <div class="navgroupitems">
+                            <a href="#cisco" class="navitem">Cisco</a>
+                            <a href="#stormshield" class="navitem">Stormshield</a>
+                            <a href="#mikrotik" class="navitem">MikroTik</a>
+                        </div>
+                    </div>
+
+                    <div class="sidebarfooter">
+                        <span class="tinylogo">a.</span>
+                        Nodus CONSOLE <span>v0.1</span>
+                    </div>
+                </aside>
+
+                <main>
+                    <!-- Section Tableau de bord -->
+                    <section id="dashboard" hidden aria-labelledby="dashboardTitle">
+                        <div class="dashheading">
+                            <div>
+                                <p class="eyebrow">VOTRE INFRASTRUCTURE</p>
+                                <h1 id="dashboardTitle">Tableau de bord</h1>
+                            </div>
+                            <span class="dashnote">Inventaire de démonstration</span>
+                        </div>
+                        <div id="machineStats" class="machinestats"></div>
+                        <div class="dashpanels">
+                            <!-- Répartition par catégorie -->
+                            <section class="chartpanel" aria-labelledby="chartTitle">
+                                <h2 id="chartTitle">Répartition des machines</h2>
+                                <p>Nombre d’équipements par catégorie</p>
+                                <div id="machineChart" class="machinechart"></div>
+                                <p class="chartcaption">Les chiffres correspondent à l’inventaire affiché.</p>
+                            </section>
+
+                            <!-- Répartition par marque -->
+                            <section class="chartpanel" aria-labelledby="brandChartTitle">
+                                <h2 id="brandChartTitle">Répartition des machines</h2>
+                                <p>Nombre d’équipements par marque</p>
+                                <div class="machinechart">
+                                    <div class="chartitem">
+                                        <div class="chartlabel">
+                                            <span>Cisco</span>
+                                            <span class="chartcount">3 machines</span>
+                                        </div>
+                                        <div class="barbg">
+                                            <div class="barfill cisco" style="width: 50%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="chartitem">
+                                        <div class="chartlabel">
+                                            <span>Stormshield</span>
+                                            <span class="chartcount">2 machines</span>
+                                        </div>
+                                        <div class="barbg">
+                                            <div class="barfill stormshield" style="width: 33%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="chartitem">
+                                        <div class="chartlabel">
+                                            <span>MikroTik</span>
+                                            <span class="chartcount">1 machine</span>
+                                        </div>
+                                        <div class="barbg">
+                                            <div class="barfill mikrotik" style="width: 17%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="chartcaption">Les chiffres correspondent à l’inventaire affiché.</p>
+                            </section>
+
+                            <!-- Liste des équipements -->
+                            <section class="inventorypanel" aria-labelledby="inventoryTitle">
+                                <h2 id="inventoryTitle">Vos équipements</h2>
+                                <p>Sélectionnez une machine pour ouvrir sa console.</p>
+                                <div id="machineList"></div>
+                            </section>
+                        </div>
+                    </section>
+
+                    <!-- Section Gestion des utilisateurs -->
+                    <section id="users" hidden aria-labelledby="usersTitle">
+                        <div class="dashheading">
+                            <div>
+                                <p class="eyebrow">SÉCURITÉ ET DROITS</p>
+                                <h1 id="usersTitle">Gestion des utilisateurs</h1>
+                            </div>
+                            <button class="primary" type="button">+ Ajouter un utilisateur</button>
+                        </div>
+                        <div class="userspanel">
+                            <table class="userstable">
+                                <thead>
+                                    <tr>
+                                        <th>Utilisateur</th>
+                                        <th>Rôle &amp; Droits</th>
+                                        <th>Statut</th>
+                                        <th>Dernière connexion</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Admin Système</strong><br>
+                                            <small>admin@nodus.local</small>
+                                        </td>
+                                        <td><span class="rolebadge admin">Super Admin</span></td>
+                                        <td><span class="statusbadge active">Actif</span></td>
+                                        <td>Aujourd'hui, 11:42</td>
+                                        <td><button class="textlink" type="button">Éditer</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Technicien Réseau</strong><br>
+                                            <small>tech@nodus.local</small>
+                                        </td>
+                                        <td><span class="rolebadge operator">Opérateur</span></td>
+                                        <td><span class="statusbadge active">Actif</span></td>
+                                        <td>Hier, 16:15</td>
+                                        <td><button class="textlink" type="button">Éditer</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Auditeur Sécurité</strong><br>
+                                            <small>audit@nodus.local</small>
+                                        </td>
+                                        <td><span class="rolebadge readonly">Lecture seule</span></td>
+                                        <td><span class="statusbadge inactive">Inactif</span></td>
+                                        <td>Il y a 5 jours</td>
+                                        <td><button class="textlink" type="button">Éditer</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Section Console SSH -->
+                    <div id="consoleview">
+                        <section class="devicecard" aria-labelledby="deviceName">
+                            <div class="deviceidentity">
+                                <div>
+                                    <div class="devicetop">
+                                        <span id="deviceType" class="eyebrow"></span>
+                                    </div>
+                                    <h1 id="deviceName"></h1>
+                                </div>
+                            </div>
+                            <div class="devicefields">
+                                <div>
+                                    <span>Adresse IP</span>
+                                    <strong id="deviceIp" class="mono"></strong>
+                                </div>
+                                <div>
+                                    <span>Modèle</span>
+                                    <strong id="deviceModel"></strong>
+                                </div>
+                                <div>
+                                    <span>Protocole</span>
+                                    <strong>SSH</strong>
+                                </div>
+                            </div>
+                            <div class="connectarea">
+                                <button id="connect" class="primary">
+                                    Connecter <span>↗</span>
+                                </button>
+                            </div>
+                        </section>
+                        <section class="console" aria-label="Console de démonstration">
+                            <div class="consoletoolbar">
+                                <div class="terminaltab">
+                                    <span class="terminalglyph">›_</span>
+                                    <strong id="terminalName"></strong>
+                                    <span class="tabkind">SSH</span>
+                                </div>
+                                <div class="consoleactions">
+                                    <button id="clear" aria-label="Effacer le terminal" title="Effacer le terminal">Effacer</button>
+                                    <button id="expand" aria-label="Agrandir la console" title="Agrandir la console">⛶</button>
+                                </div>
+                            </div>
+                            <div class="terminalbody" id="terminalBody">
+                                <div class="terminalwelcome">
+                                    <span class="terminalbadge">Nodus / TERMINAL</span>
+                                    <h3>Une fenêtre sur votre réseau.</h3>
+                                    <p>Ouvrez une session pour explorer cet équipement.</p>
+                                    <p class="terminalnotice">Démonstration interactive · aucune connexion réseau réelle</p>
+                                </div>
+                                <div id="log" role="log" aria-live="polite" aria-label="Historique du terminal"></div>
+                                <form id="commandForm" class="commandline" hidden>
+                                    <label for="command" id="prompt"></label>
+                                    <input id="command" autocomplete="off" spellcheck="false" aria-label="Commande du terminal simulé" placeholder="Saisissez help pour commencer">
+                                    <button type="submit" aria-label="Exécuter la commande">↵</button>
+                                </form>
+                            </div>
+                            <div class="consolestatus">
+                                <span>
+                                    <i id="statusDot"></i>
+                                    <span id="bottomState">Prêt à se connecter</span>
+                                </span>
+                                <span>
+                                    UTF-8 <b>·</b>
+                                    SSH simulé <b>·</b>
+                                    <span id="bottomIp"></span>
+                                </span>
+                            </div>
+                        </section>
+                        <div class="underconsole">
+                            <div>
+                                <span class="helpicon">i</span>
+                                <p>
+                                    <strong>Essayez votre console.</strong>
+                                    Connectez-vous, puis saisissez <code>help</code>
+                                    pour afficher les commandes.
+                                </p>
+                            </div>
+                            <span class="keyhint">
+                                <kbd>Entrée</kbd>
+                                exécuter <span>·</span>
+                                <kbd>↑</kbd>
+                                historique
+                            </span>
+                        </div>
+                        <footer class="mainfooter">
+                            <span>Conçu pour garder le contrôle.</span>
+                            <div class="palette" aria-label="Palette ardoise">
+                                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                            </div>
+                        </footer>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </body>
+</html>
