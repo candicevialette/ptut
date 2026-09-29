@@ -17,7 +17,7 @@ body {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* Règle vitale pour cacher les éléments (comme le menu profil) */
+/* Règle vitale pour masquer les éléments masqués */
 [hidden] {
     display: none !important;
 }
@@ -47,7 +47,7 @@ body {
 
 .brandmark {
     background: #394799;
-    color: #fff;
+    color: #ffffff;
     width: 24px;
     height: 24px;
     border-radius: 6px;
@@ -162,6 +162,7 @@ body {
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     font-size: 0.8rem;
+    box-sizing: border-box;
 }
 
 button.btnblock {
@@ -171,7 +172,7 @@ button.btnblock {
 }
 
 /* ==========================================================================
-   4. LAYOUT & SIDEBAR
+   4. LAYOUT & SIDEBAR (MENUS DE NAVIGATION)
    ========================================================================== */
 .layout {
     display: flex;
@@ -214,30 +215,91 @@ button.btnblock {
     text-decoration: none;
     font-size: 0.875rem;
     font-weight: 500;
+    transition: background 0.2s ease;
 }
 
-.sidegrouptitle {
+.dashboardlink:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Menu dynamique des Équipements (#devices) & Groupes */
+#devices, .devicenav {
     display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #cbd5e1;
-    padding: 6px 8px;
-    margin-top: 12px;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.sidegroupitems {
+.devicegroup, .sidegroup {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.sideitem {
+.devicegroup-header, .sidegrouptitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.devicegroup-header .count, .sidegrouptitle .count {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.devicegroup-list, .sidegroupitems {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.deviceitem, .sideitem {
+    display: flex;
+    align-items: center;
     padding: 8px 12px;
     color: #94a3b8;
     text-decoration: none;
     font-size: 0.85rem;
+    font-weight: 500;
     border-radius: 6px;
+    position: relative;
+    transition: all 0.15s ease;
+}
+
+.deviceitem:hover, .sideitem:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* Élément actif sélectionné avec la barre bleue à gauche */
+.deviceitem.active, .sideitem.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    font-weight: 600;
+}
+
+.deviceitem.active::before, .sideitem.active::before {
+    content: "";
+    position: absolute;
+    left: -16px;
+    top: 4px;
+    bottom: 4px;
+    width: 4px;
+    background-color: #38bdf8;
+    border-radius: 0 4px 4px 0;
+}
+
+.sidebarfooter {
+    margin-top: auto;
+    font-size: 0.75rem;
+    color: #94a3b8;
 }
 
 main {
@@ -246,13 +308,28 @@ main {
 }
 
 /* ==========================================================================
-   5. TABLEAU DE BORD & CARTES REPARTITION
+   5. TABLEAU DE BORD, CARTES DE STATISTIQUES & JAUGES
    ========================================================================== */
 .dashheading {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     margin-bottom: 24px;
+}
+
+.machinestats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.statcard {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .dashpanels {
@@ -262,7 +339,7 @@ main {
     margin-top: 24px;
 }
 
-.chartpanel {
+.chartpanel, .inventorypanel {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
@@ -270,14 +347,14 @@ main {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.chartpanel h2 {
+.chartpanel h2, .inventorypanel h2 {
     font-size: 1.2rem;
     font-weight: 700;
     color: #0f172a;
     margin: 0 0 4px 0;
 }
 
-.chartpanel > p {
+.chartpanel > p, .inventorypanel > p {
     font-size: 0.85rem;
     color: #64748b;
     margin: 0 0 20px 0;
@@ -300,6 +377,7 @@ main {
     justify-content: space-between;
     font-size: 0.9rem;
     font-weight: 500;
+    color: #1e293b;
 }
 
 .chartcount {
@@ -308,7 +386,6 @@ main {
     font-weight: 400;
 }
 
-/* Les jauges de progression */
 .barbg {
     width: 100%;
     height: 10px;
@@ -322,7 +399,6 @@ main {
     border-radius: 6px;
 }
 
-/* Couleurs des marques */
 .barfill.cisco { background-color: #4361ee; }
 .barfill.stormshield { background-color: #3a0ca3; }
 .barfill.mikrotik { background-color: #2a9d8f; }
@@ -336,7 +412,165 @@ main {
 }
 
 /* ==========================================================================
-   6. BOUTONS ET BADGES
+   6. TABLEAU DE GESTION DES UTILISATEURS
+   ========================================================================== */
+.userspanel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow-x: auto;
+}
+
+.userstable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.userstable th {
+    padding: 14px 16px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.userstable td {
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.userstable small { color: #64748b; }
+
+.rolebadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.rolebadge.admin { background: #e0e7ff; color: #3730a3; }
+.rolebadge.operator { background: #e0f2fe; color: #0369a1; }
+.rolebadge.readonly { background: #f1f5f9; color: #475569; }
+
+.statusbadge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.statusbadge.active { background: #dcfce7; color: #15803d; }
+.statusbadge.inactive { background: #fee2e2; color: #b91c1c; }
+
+/* ==========================================================================
+   7. VUE TERMINAL / CONSOLE (#consoleview)
+   ========================================================================== */
+.devicecard {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.devicefields {
+    display: flex;
+    gap: 32px;
+}
+
+.devicefields div {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85rem;
+}
+
+.devicefields span {
+    color: #64748b;
+    font-size: 0.75rem;
+}
+
+.console {
+    background: #0f172a;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #1e293b;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.consoletoolbar {
+    background: #1e293b;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #334155;
+}
+
+.terminaltab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f8fafc;
+    font-size: 0.85rem;
+}
+
+.tabkind {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.terminalbody {
+    padding: 20px;
+    min-height: 300px;
+    color: #38bdf8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.875rem;
+}
+
+.consolestatus {
+    background: #1e293b;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    border-top: 1px solid #334155;
+}
+
+.underconsole {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+kbd {
+    background: #e2e8f0;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    color: #334155;
+}
+
+/* ==========================================================================
+   8. BOUTONS GENERAUX
    ========================================================================== */
 button.primary {
     background: #394799;
@@ -346,4 +580,24 @@ button.primary {
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
+    transition: background 0.2s;
+}
+
+button.primary:hover {
+    background: #2d387a;
+}
+
+button.textlink {
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 14px;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+button.textlink:hover {
+    border-color: #394799;
+    color: #394799;
 }
