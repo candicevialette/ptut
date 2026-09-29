@@ -2749,3 +2749,122 @@ html {
     border-color: #394799;
     color: #394799;
 }
+/* Popover Profil AD */
+.userprofile {
+    position: relative;
+}
+
+.avatar {
+    cursor: pointer;
+    border: none;
+    background: #394799;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 3px rgba(57, 71, 153, 0.2);
+}
+
+.profilepopover {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 280px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    z-index: 100;
+    color: #1e293b;
+}
+
+.popoverheader h3 {
+    margin: 6px 0 2px 0;
+    font-size: 1rem;
+}
+
+.popoverheader p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.userbadge {
+    display: inline-block;
+    background: #e0e7ff;
+    color: #3730a3;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.popoverdetails {
+    margin-top: 12px;
+    font-size: 0.8rem;
+}
+
+.detailrow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.detailrow span {
+    color: #64748b;
+}
+
+.popoverdivider {
+    border: 0;
+    border-top: 1px solid #f1f5f9;
+    margin: 12px 0;
+}
+
+.passform h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.85rem;
+    color: #0f172a;
+}
+
+.fieldgroup {
+    margin-bottom: 10px;
+}
+
+.fieldgroup label {
+    display: block;
+    font-size: 0.75rem;
+    color: #475569;
+    margin-bottom: 4px;
+}
+
+.fieldgroup input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    box-sizing: border-box;
+}
+
+.fieldgroup input:focus {
+    outline: none;
+    border-color: #394799;
+}
+
+.btnblock {
+    width: 100%;
+    margin-top: 6px;
+    padding: 8px;
+    font-size: 0.8rem;
+}
