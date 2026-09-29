@@ -11,6 +11,7 @@
     </head>
     <body>
         <div id="administration">
+            <!-- Barre supérieure -->
             <header class="topbar">
                 <a class="brand" href="#dashboard" aria-label="Nodus, accueil">
                     <span class="brandmark">a</span>
@@ -28,7 +29,7 @@
                         Mode administration
                     </span>
                     
-                    <!-- Menu Profil / AD avec Fenêtre Déroulante -->
+                    <!-- Menu Profil / AD -->
                     <div class="userprofile">
                         <button type="button" class="avatar" id="avatarBtn" aria-expanded="false" aria-controls="profileMenu" title="Espace administrateur">AD</button>
                         
@@ -65,12 +66,14 @@
                     </div>
                 </div>
             </header>
+
             <div class="layout">
+                <!-- Barre latérale -->
                 <aside class="sidebar">
                     <div class="sideintro">
                         <span class="eyebrow">NOM DE L’ENTREPRISE</span>
                         <h2>
-                            Équipements <span id="sidebarTotal"></span>
+                            Équipements <span id="sidebarTotal">6</span>
                         </h2>
                     </div>
                     <nav class="sidenav" aria-label="Navigation principale admin">
@@ -81,18 +84,20 @@
                             Gestion des utilisateurs <span>↗</span>
                         </a>
                     </nav>
-                    <nav id="devices" aria-label="Équipements réseau"></nav>
+
+                    <!-- Liste des équipements générée dynamiquement ou fixe -->
+                    <nav id="devices" class="devicenav" aria-label="Équipements réseau"></nav>
                     
-                    <!-- Section Marques (Même typologie que Routeurs / Switchs) -->
-                    <div class="navgroup">
-                        <div class="navgrouptitle">
+                    <!-- Section Marques (Même typologie que les catégories d'équipements) -->
+                    <div class="sidegroup">
+                        <div class="sidegrouptitle">
                             <span>Marques</span>
                             <span class="count">3 ˅</span>
                         </div>
-                        <div class="navgroupitems">
-                            <a href="#cisco" class="navitem">Cisco</a>
-                            <a href="#stormshield" class="navitem">Stormshield</a>
-                            <a href="#mikrotik" class="navitem">MikroTik</a>
+                        <div class="sidegroupitems">
+                            <a href="#cisco" class="sideitem">Cisco</a>
+                            <a href="#stormshield" class="sideitem">Stormshield</a>
+                            <a href="#mikrotik" class="sideitem">MikroTik</a>
                         </div>
                     </div>
 
@@ -101,8 +106,9 @@
                         Nodus CONSOLE <span>v0.1</span>
                     </div>
                 </aside>
+
                 <main>
-                    <!-- Section Tableau de bord -->
+                    <!-- Section 1 : Tableau de bord -->
                     <section id="dashboard" hidden aria-labelledby="dashboardTitle">
                         <div class="dashheading">
                             <div>
@@ -111,14 +117,55 @@
                             </div>
                             <span class="dashnote">Inventaire de démonstration</span>
                         </div>
+
                         <div id="machineStats" class="machinestats"></div>
+
                         <div class="dashpanels">
+                            <!-- Graphique par Catégorie -->
                             <section class="chartpanel" aria-labelledby="chartTitle">
                                 <h2 id="chartTitle">Répartition des machines</h2>
                                 <p>Nombre d’équipements par catégorie</p>
                                 <div id="machineChart" class="machinechart"></div>
                                 <p class="chartcaption">Les chiffres correspondent à l’inventaire affiché.</p>
                             </section>
+
+                            <!-- Graphique par Marque -->
+                            <section class="chartpanel" aria-labelledby="brandChartTitle">
+                                <h2 id="brandChartTitle">Répartition des machines</h2>
+                                <p>Nombre d’équipements par marque</p>
+                                <div class="machinechart">
+                                    <div class="chartitem">
+                                        <div class="chartlabel">
+                                            <span>Cisco</span>
+                                            <span class="chartcount">3 machines</span>
+                                        </div>
+                                        <div class="barbg">
+                                            <div class="barfill cisco" style="width: 50%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="chartitem">
+                                        <div class="chartlabel">
+                                            <span>Stormshield</span>
+                                            <span class="chartcount">2 machines</span>
+                                        </div>
+                                        <div class="barbg">
+                                            <div class="barfill stormshield" style="width: 33%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="chartitem">
+                                        <div class="chartlabel">
+                                            <span>MikroTik</span>
+                                            <span class="chartcount">1 machine</span>
+                                        </div>
+                                        <div class="barbg">
+                                            <div class="barfill mikrotik" style="width: 17%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="chartcaption">Les chiffres correspondent à l’inventaire affiché.</p>
+                            </section>
+
+                            <!-- Inventaire -->
                             <section class="inventorypanel" aria-labelledby="inventoryTitle">
                                 <h2 id="inventoryTitle">Vos équipements</h2>
                                 <p>Sélectionnez une machine pour ouvrir sa console.</p>
@@ -127,7 +174,7 @@
                         </div>
                     </section>
 
-                    <!-- Section Gestion des utilisateurs -->
+                    <!-- Section 2 : Gestion des utilisateurs -->
                     <section id="users" hidden aria-labelledby="usersTitle">
                         <div class="dashheading">
                             <div>
@@ -183,7 +230,7 @@
                         </div>
                     </section>
 
-                    <!-- Section Console -->
+                    <!-- Section 3 : Console SSH -->
                     <div id="consoleview">
                         <section class="devicecard" aria-labelledby="deviceName">
                             <div class="deviceidentity">
@@ -214,6 +261,7 @@
                                 </button>
                             </div>
                         </section>
+
                         <section class="console" aria-label="Console de démonstration">
                             <div class="consoletoolbar">
                                 <div class="terminaltab">
@@ -252,32 +300,25 @@
                                 </span>
                             </div>
                         </section>
+
                         <div class="underconsole">
                             <div>
                                 <span class="helpicon">i</span>
                                 <p>
                                     <strong>Essayez votre console.</strong>
-                                    Connectez-vous, puis saisissez <code>help</code>
-                                    pour afficher les commandes.
+                                    Connectez-vous, puis saisissez <code>help</code> pour afficher les commandes.
                                 </p>
                             </div>
                             <span class="keyhint">
-                                <kbd>Entrée</kbd>
-                                exécuter <span>·</span>
-                                <kbd>↑</kbd>
-                                historique
+                                <kbd>Entrée</kbd> exécuter <span>·</span>
+                                <kbd>↑</kbd> historique
                             </span>
                         </div>
+
                         <footer class="mainfooter">
                             <span>Conçu pour garder le contrôle.</span>
-                            <div class="palette" aria-label="Palette ardoise, bleuet, cobalt, bleu Klein, bleu nuit, pétrole et bleu paon">
-                                <i></i>
-                                <i></i>
-                                <i></i>
-                                <i></i>
-                                <i></i>
-                                <i></i>
-                                <i></i>
+                            <div class="palette" aria-label="Palette ardoise">
+                                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                             </div>
                         </footer>
                     </div>
