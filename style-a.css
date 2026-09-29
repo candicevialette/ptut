@@ -1,4 +1,4 @@
-/* --- POPOVER PROFIL AD --- */
+/* Popover Profil AD */
 .userprofile {
     position: relative;
 }
@@ -11,7 +11,7 @@
     background: #ffffff;
     border: 1px solid var(--line);
     border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     padding: 18px;
     z-index: 100;
 }
@@ -90,84 +90,7 @@
     margin-top: 4px;
 }
 
-/* --- NAV GROUP MARQUES --- */
-.navgroup {
-    margin-top: 20px;
-    padding: 0 12px;
-}
-
-.navgrouptitle {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    font-weight: 700;
-    color: #d1dfe3;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.navgroupitems {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.navitem {
-    font-size: 13px;
-    color: #d8e4e8;
-    padding: 8px 10px;
-    border-radius: 6px;
-    transition: background 0.15s;
-}
-
-.navitem:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-/* --- REPARTITION PAR MARQUE --- */
-.chartitem {
-    margin-bottom: 18px;
-}
-
-.chartlabel {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    margin-bottom: 6px;
-}
-
-.chartcount {
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.barbg {
-    height: 12px;
-    background: #eef2f7;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.barfill {
-    height: 100%;
-    border-radius: 6px;
-}
-
-.barfill.cisco {
-    background: #405da0;
-}
-
-.barfill.stormshield {
-    background: #398b94;
-}
-
-.barfill.mikrotik {
-    background: #39388b;
-}
-
-/* --- GESTION DES UTILISATEURS --- */
+/* Tableau de gestion des utilisateurs */
 .userspanel {
     background: #fff;
     border: 1px solid var(--line);
@@ -210,20 +133,9 @@
     font-weight: 600;
 }
 
-.rolebadge.admin {
-    background: #edf0fa;
-    color: #39388b;
-}
-
-.rolebadge.operator {
-    background: #e6f7f8;
-    color: #2b6d75;
-}
-
-.rolebadge.readonly {
-    background: #f0f2f5;
-    color: #616e85;
-}
+.rolebadge.admin { background: #edf0fa; color: #39388b; }
+.rolebadge.operator { background: #e6f7f8; color: #2b6d75; }
+.rolebadge.readonly { background: #f0f2f5; color: #616e85; }
 
 .statusbadge {
     display: inline-block;
@@ -233,12 +145,5 @@
     font-weight: 500;
 }
 
-.statusbadge.active {
-    background: #e6f4ea;
-    color: #137333;
-}
-
-.statusbadge.inactive {
-    background: #fce8e6;
-    color: #c5221f;
-}
+.statusbadge.active { background: #e6f4ea; color: #137333; }
+.statusbadge.inactive { background: #fce8e6; color: #c5221f; }
