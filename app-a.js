@@ -295,9 +295,9 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
     const roles = {admin: 'Super Admin', operator: 'Opérateur', readonly: 'Lecture seule'};
     const rights = {admin: 'Administration complète des équipements et des utilisateurs.', operator: 'Administration des équipements, sans gestion des utilisateurs.', readonly: 'Consultation des équipements, sans modification.'};
     const initial = [
-        {id:'admin-system', name:'Admin Système', email:'admin@nodus.local', role:'admin', active:true, lastLogin:null},
-        {id:'network-tech', name:'Technicien Réseau', email:'tech@nodus.local', role:'operator', active:true, lastLogin:null},
-        {id:'security-audit', name:'Auditeur Sécurité', email:'audit@nodus.local', role:'readonly', active:false, lastLogin:null}
+        {id:'admin-system', name:'Admin Système', userID:'admin', role:'admin', active:true, lastLogin:null},
+        {id:'network-tech', name:'Technicien Réseau', userID:'tech', role:'operator', active:true, lastLogin:null},
+        {id:'security-audit', name:'Auditeur Sécurité', userID:'audit', role:'readonly', active:false, lastLogin:null}
     ];
     const dialog = document.getElementById('userDialog');
     const form = document.getElementById('userEditor');
@@ -305,7 +305,7 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
     const feedback = document.getElementById('usersFeedback');
     const error = document.getElementById('userError');
     const name = document.getElementById('userName');
-    const email = document.getElementById('userEmail');
+    const userID = document.getElementById('useruserID');
     const role = document.getElementById('userRole');
     const status = document.getElementById('userStatus');
     let users = initial.map(user => ({...user}));
@@ -317,11 +317,11 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
     function validRows(rows) {
         return Array.isArray(rows) && rows.length > 0 && rows.every(user =>
             user && typeof user.id === 'string' && typeof user.name === 'string' && user.name.trim() &&
-            typeof user.email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email) &&
+            typeof user.userID === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.userID) &&
             Object.hasOwn(roles, user.role) && typeof user.active === 'boolean' &&
             (user.lastLogin === null || (typeof user.lastLogin === 'string' && !Number.isNaN(Date.parse(user.lastLogin))))
         ) && new Set(rows.map(u=>u.id)).size === rows.length &&
-        new Set(rows.map(u=>u.email.trim().toLowerCase())).size === rows.length &&
+        new Set(rows.map(u=>u.userID.trim().toLowerCase())).size === rows.length &&
         rows.some(u=>u.role === 'admin' && u.active);
     }
     try {
@@ -347,7 +347,7 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
         users.forEach(user => {
             const tr = el('tr');
             const identity = el('td');
-            identity.append(el('strong',user.name),el('br'),el('small',user.email));
+            identity.append(el('strong',user.name),el('br'),el('small',user.userID));
             const roleCell=el('td'); roleCell.append(el('span',roles[user.role],'rolebadge '+user.role));
             const state=el('td'); state.append(el('span',user.active?'Actif':'Inactif','statusbadge '+(user.active?'active':'inactive')));
             const login=el('td',user.lastLogin?new Date(user.lastLogin).toLocaleString('fr-FR'):'Non renseignée');
@@ -361,8 +361,8 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
     function updateRights() { document.getElementById('userRights').textContent=rights[role.value]; }
     function openEditor(id, source) {
         const user=users.find(u=>u.id===id);
-        editing=user?.id||null;opener=source;form.reset();name.setCustomValidity('');email.setCustomValidity('');error.textContent='';
-        name.value=user?.name||'';email.value=user?.email||'';role.value=user?.role||'readonly';status.value=user?.active===false?'inactive':'active';
+        editing=user?.id||null;opener=source;form.reset();name.setCustomValidity('');userID.setCustomValidity('');error.textContent='';
+        name.value=user?.name||'';userID.value=user?.userID||'';role.value=user?.role||'readonly';status.value=user?.active===false?'inactive':'active';
         document.getElementById('userDialogTitle').textContent=user?'Modifier l’utilisateur':'Ajouter un utilisateur';
         document.getElementById('saveUser').textContent=user?'Enregistrer les modifications':'Ajouter l’utilisateur';
         updateRights();dialog.showModal();name.focus();
@@ -377,15 +377,15 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
         (opener?.isConnected?opener:replacement||document.getElementById('addUser')).focus();
     });
     role.addEventListener('change',updateRights);
-    form.addEventListener('input',()=>{name.setCustomValidity('');email.setCustomValidity('');error.textContent='';});
+    form.addEventListener('input',()=>{name.setCustomValidity('');userID.setCustomValidity('');error.textContent='';});
     form.addEventListener('submit',event=>{
-        event.preventDefault();name.value=name.value.trim();email.value=email.value.trim().toLowerCase();
+        event.preventDefault();name.value=name.value.trim();userID.value=userID.value.trim().toLowerCase();
         name.setCustomValidity(name.value?'':'Saisissez un nom.');
-        email.setCustomValidity(users.some(u=>u.email.trim().toLowerCase()===email.value && u.id!==editing)?'Cette adresse e-mail est déjà utilisée.':'');
+        userID.setCustomValidity(users.some(u=>u.userID.trim().toLowerCase()===userID.value && u.id!==editing)?'Cette adresse e-mail est déjà utilisée.':'');
         if (!form.reportValidity()) return;
         if (!storageOK) {error.textContent='Le stockage local n’est pas disponible. Aucune modification n’a été enregistrée.';return;}
         const old=users.find(u=>u.id===editing);
-        const user={id:editing||crypto.randomUUID(),name:name.value,email:email.value,role:role.value,active:status.value==='active',lastLogin:old?.lastLogin||null};
+        const user={id:editing||crypto.randomUUID(),name:name.value,userID:userID.value,role:role.value,active:status.value==='active',lastLogin:old?.lastLogin||null};
         const next=editing?users.map(u=>u.id===editing?user:u):[...users,user];
         if (!next.some(u=>u.role==='admin'&&u.active)) {error.textContent='Conservez au moins un Super Admin actif.';return;}
         try {
