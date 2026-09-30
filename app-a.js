@@ -244,12 +244,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const passForm = $('changePasswordForm');
     const message = $('passwordMessage');
     if (!avatarBtn || !profileMenu) return;
+    profileMenu.hidden = true;
+    avatarBtn.setAttribute('aria-expanded', 'false');
 
     function closeProfile(restoreFocus = false) {
         profileMenu.hidden = true;
         avatarBtn.setAttribute('aria-expanded', 'false');
         avatarBtn.setAttribute('aria-label', 'Ouvrir mon profil');
         passForm?.reset();
+        ['currentPass', 'newPass'].forEach(id => { if ($(id)) { $(id).type = 'password'; $(id).value = ''; } });
         if (message) message.textContent = 'Démonstration : aucun mot de passe ne sera modifié.';
         if (restoreFocus) avatarBtn.focus();
     }
@@ -287,3 +290,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('hashchange', showRoute);
+
+// Afficher uniquement à la demande ; masquer à chaque fermeture du profil.
+document.querySelectorAll('.passwordtoggle').forEach(button => {
+    button.addEventListener('click', () => {
+        const input = document.getElementById(button.dataset.password);
+        const reveal = input.type === 'password';
+        input.type = reveal ? 'text' : 'password';
+        button.setAttribute('aria-pressed', String(reveal));
+        const label = (reveal ? 'Masquer ' : 'Afficher ') + (input.id === 'currentPass' ? 'le mot de passe actuel' : 'le nouveau mot de passe');
+        button.setAttribute('aria-label', label);
+        button.title = label;
+        input.focus();
+    });
+});
+document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
+    document.querySelectorAll('.passwordtoggle').forEach(button => {
+        document.getElementById(button.dataset.password).type = 'password';
+        button.setAttribute('aria-pressed', 'false');
+        const label = 'Afficher ' + (button.dataset.password === 'currentPass' ? 'le mot de passe actuel' : 'le nouveau mot de passe');
+        button.setAttribute('aria-label', label);
+        button.title = label;
+    });
+});
