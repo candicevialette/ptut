@@ -6,8 +6,8 @@
         <meta name="description" content="Nodus, votre espace d’administration réseau. Console multi-équipements.">
         <title>Nodus — Console réseau</title>
         <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23394799'/%3E%3Cpath d='M7 23 16 8l9 15M11 18h10' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
-        <link rel="stylesheet" href="style.css?v=20260930-4">
-        <script src="app-a.js?v=20260930-4" defer></script>
+        <link rel="stylesheet" href="style.css?v=20260930-5">
+        <script src="app-a.js?v=20260930-5" defer></script>
         <style>#profileMenu[hidden] { display: none !important; }</style>
     </head>
     <body>
@@ -165,8 +165,10 @@
                                 <p class="eyebrow">SÉCURITÉ ET DROITS</p>
                                 <h1 id="usersTitle">Gestion des utilisateurs</h1>
                             </div>
-                            <button class="primary" type="button">+ Ajouter un utilisateur</button>
+                            <button class="primary" id="addUser" type="button">+ Ajouter un utilisateur</button>
                         </div>
+                        <p class="users-storage-note">Fiches enregistrées dans ce navigateur. La création des comptes et l’application des droits nécessitent le service d’authentification.</p>
+                        <p id="usersFeedback" class="usersfeedback" role="status" aria-live="polite"></p>
                         <div class="userspanel" role="region" aria-label="Liste des utilisateurs" tabindex="0">
                             <table class="userstable">
                                 <thead>
@@ -178,38 +180,7 @@
                                         <th scope="col">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <strong>Admin Système</strong><br>
-                                            <small>admin@nodus.local</small>
-                                        </td>
-                                        <td><span class="rolebadge admin">Super Admin</span></td>
-                                        <td><span class="statusbadge active">Actif</span></td>
-                                        <td>Aujourd'hui, 11:42</td>
-                                        <td><button class="textlink" type="button">Éditer</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Technicien Réseau</strong><br>
-                                            <small>tech@nodus.local</small>
-                                        </td>
-                                        <td><span class="rolebadge operator">Opérateur</span></td>
-                                        <td><span class="statusbadge active">Actif</span></td>
-                                        <td>Hier, 16:15</td>
-                                        <td><button class="textlink" type="button">Éditer</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <strong>Auditeur Sécurité</strong><br>
-                                            <small>audit@nodus.local</small>
-                                        </td>
-                                        <td><span class="rolebadge readonly">Lecture seule</span></td>
-                                        <td><span class="statusbadge inactive">Inactif</span></td>
-                                        <td>Il y a 5 jours</td>
-                                        <td><button class="textlink" type="button">Éditer</button></td>
-                                    </tr>
-                                </tbody>
+                                <tbody id="userRows"></tbody>
                             </table>
                         </div>
                     </section>
@@ -293,5 +264,15 @@
                 </main>
             </div>
         </div>
-    </body>
+    <dialog id="userDialog" class="userdialog" aria-labelledby="userDialogTitle" aria-describedby="userDialogNote">
+    <form id="userEditor">
+        <div class="editorheading"><div><p class="eyebrow">UTILISATEURS ET ACCÈS</p><h2 id="userDialogTitle">Ajouter un utilisateur</h2></div><button id="closeUser" type="button" class="editorclose" aria-label="Fermer le formulaire">×</button></div>
+        <p id="userDialogNote" class="editornote">Renseignez l’identité et les droits souhaités pour cette fiche utilisateur.</p>
+        <div class="editorfield"><label for="userName">Nom complet <span>Obligatoire</span></label><input id="userName" name="name" maxlength="100" autocomplete="name" required placeholder="Ex. Camille Martin"></div>
+        <div class="editorfield"><label for="userEmail">Adresse e-mail <span>Obligatoire</span></label><input id="userEmail" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="camille@entreprise.fr"></div>
+        <div class="editorgrid"><div class="editorfield"><label for="userRole">Rôle</label><select id="userRole" name="role" aria-describedby="userRights"><option value="readonly">Lecture seule</option><option value="operator">Opérateur</option><option value="admin">Super Admin</option></select></div><div class="editorfield"><label for="userStatus">Statut</label><select id="userStatus" name="status"><option value="active">Actif</option><option value="inactive">Inactif</option></select></div></div>
+        <p id="userRights" class="userrights"></p><p id="userError" class="usererror" role="alert"></p>
+        <div class="editoractions"><button id="cancelUser" class="secondary" type="button">Annuler</button><button id="saveUser" class="primary" type="submit">Ajouter l’utilisateur</button></div>
+    </form>
+</dialog></body>
 </html>

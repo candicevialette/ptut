@@ -286,3 +286,116 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
         button.title = label;
     });
 });
+
+
+// Gestion locale des fiches utilisateurs. Aucun mot de passe ni droit serveur
+// n'est stocké ici. Remplacer ce stockage par une API authentifiée en production.
+(() => {
+    const KEY = 'nodus.users.v1';
+    const roles = {admin: 'Super Admin', operator: 'Opérateur', readonly: 'Lecture seule'};
+    const rights = {admin: 'Administration complète des équipements et des utilisateurs.', operator: 'Administration des équipements, sans gestion des utilisateurs.', readonly: 'Consultation des équipements, sans modification.'};
+    const initial = [
+        {id:'admin-system', name:'Admin Système', email:'admin@nodus.local', role:'admin', active:true, lastLogin:null},
+        {id:'network-tech', name:'Technicien Réseau', email:'tech@nodus.local', role:'operator', active:true, lastLogin:null},
+        {id:'security-audit', name:'Auditeur Sécurité', email:'audit@nodus.local', role:'readonly', active:false, lastLogin:null}
+    ];
+    const dialog = document.getElementById('userDialog');
+    const form = document.getElementById('userEditor');
+    const table = document.getElementById('userRows');
+    const feedback = document.getElementById('usersFeedback');
+    const error = document.getElementById('userError');
+    const name = document.getElementById('userName');
+    const email = document.getElementById('userEmail');
+    const role = document.getElementById('userRole');
+    const status = document.getElementById('userStatus');
+    let users = initial.map(user => ({...user}));
+    let snapshot = null;
+    let editing = null;
+    let opener = null;
+    let storageOK = true;
+
+    function validRows(rows) {
+        return Array.isArray(rows) && rows.length > 0 && rows.every(user =>
+            user && typeof user.id === 'string' && typeof user.name === 'string' && user.name.trim() &&
+            typeof user.email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email) &&
+            Object.hasOwn(roles, user.role) && typeof user.active === 'boolean' &&
+            (user.lastLogin === null || (typeof user.lastLogin === 'string' && !Number.isNaN(Date.parse(user.lastLogin))))
+        ) && new Set(rows.map(u=>u.id)).size === rows.length &&
+        new Set(rows.map(u=>u.email.trim().toLowerCase())).size === rows.length &&
+        rows.some(u=>u.role === 'admin' && u.active);
+    }
+    try {
+        snapshot = localStorage.getItem(KEY);
+        if (snapshot !== null) {
+            const data = JSON.parse(snapshot);
+            if (data.version !== 1 || !validRows(data.users)) throw Error('invalid');
+            users = data.users;
+        }
+    } catch {
+        storageOK = false;
+        feedback.textContent = 'Le stockage local est inaccessible ou invalide. Les données existantes n’ont pas été écrasées ; l’enregistrement est indisponible.';
+    }
+
+    function el(tag, text, className) {
+        const node = document.createElement(tag);
+        if (text !== undefined) node.textContent = text;
+        if (className) node.className = className;
+        return node;
+    }
+    function render() {
+        table.replaceChildren();
+        users.forEach(user => {
+            const tr = el('tr');
+            const identity = el('td');
+            identity.append(el('strong',user.name),el('br'),el('small',user.email));
+            const roleCell=el('td'); roleCell.append(el('span',roles[user.role],'rolebadge '+user.role));
+            const state=el('td'); state.append(el('span',user.active?'Actif':'Inactif','statusbadge '+(user.active?'active':'inactive')));
+            const login=el('td',user.lastLogin?new Date(user.lastLogin).toLocaleString('fr-FR'):'Non renseignée');
+            const actions=el('td'), button=el('button','Éditer','textlink');
+            button.type='button';button.dataset.editUser=user.id;
+            button.setAttribute('aria-label','Éditer '+user.name);
+            button.addEventListener('click',()=>openEditor(user.id,button));
+            actions.append(button);tr.append(identity,roleCell,state,login,actions);table.append(tr);
+        });
+    }
+    function updateRights() { document.getElementById('userRights').textContent=rights[role.value]; }
+    function openEditor(id, source) {
+        const user=users.find(u=>u.id===id);
+        editing=user?.id||null;opener=source;form.reset();name.setCustomValidity('');email.setCustomValidity('');error.textContent='';
+        name.value=user?.name||'';email.value=user?.email||'';role.value=user?.role||'readonly';status.value=user?.active===false?'inactive':'active';
+        document.getElementById('userDialogTitle').textContent=user?'Modifier l’utilisateur':'Ajouter un utilisateur';
+        document.getElementById('saveUser').textContent=user?'Enregistrer les modifications':'Ajouter l’utilisateur';
+        updateRights();dialog.showModal();name.focus();
+    }
+    function closeEditor() { dialog.close(); }
+    document.getElementById('addUser').addEventListener('click',event=>openEditor(null,event.currentTarget));
+    document.getElementById('cancelUser').addEventListener('click',closeEditor);
+    document.getElementById('closeUser').addEventListener('click',closeEditor);
+    dialog.addEventListener('close',()=>{
+        form.reset();error.textContent='';
+        const replacement=[...table.querySelectorAll('[data-edit-user]')].find(b=>b.dataset.editUser===editing);
+        (opener?.isConnected?opener:replacement||document.getElementById('addUser')).focus();
+    });
+    role.addEventListener('change',updateRights);
+    form.addEventListener('input',()=>{name.setCustomValidity('');email.setCustomValidity('');error.textContent='';});
+    form.addEventListener('submit',event=>{
+        event.preventDefault();name.value=name.value.trim();email.value=email.value.trim().toLowerCase();
+        name.setCustomValidity(name.value?'':'Saisissez un nom.');
+        email.setCustomValidity(users.some(u=>u.email.trim().toLowerCase()===email.value && u.id!==editing)?'Cette adresse e-mail est déjà utilisée.':'');
+        if (!form.reportValidity()) return;
+        if (!storageOK) {error.textContent='Le stockage local n’est pas disponible. Aucune modification n’a été enregistrée.';return;}
+        const old=users.find(u=>u.id===editing);
+        const user={id:editing||crypto.randomUUID(),name:name.value,email:email.value,role:role.value,active:status.value==='active',lastLogin:old?.lastLogin||null};
+        const next=editing?users.map(u=>u.id===editing?user:u):[...users,user];
+        if (!next.some(u=>u.role==='admin'&&u.active)) {error.textContent='Conservez au moins un Super Admin actif.';return;}
+        try {
+            if (localStorage.getItem(KEY)!==snapshot) {error.textContent='La liste a changé dans un autre onglet. Fermez ce formulaire et rechargez la page avant de réessayer.';return;}
+            const data=JSON.stringify({version:1,users:next});
+            localStorage.setItem(KEY,data);snapshot=data;
+        } catch {error.textContent='Impossible d’enregistrer dans ce navigateur. Aucune modification n’a été appliquée.';return;}
+        users=next;render();feedback.textContent=(editing?'Fiche utilisateur modifiée':'Fiche utilisateur ajoutée')+' : '+user.name+'. Enregistrée dans ce navigateur.';closeEditor();
+    });
+    window.addEventListener('hashchange',()=>{if(dialog.open)closeEditor();});
+    render();
+})();
+

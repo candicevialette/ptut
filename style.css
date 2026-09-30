@@ -2846,3 +2846,29 @@ html {
     .topbar { gap: 12px 20px; }
     .userprofile .profilepopover { top: 90px; max-height: calc(100dvh - 106px); }
 }
+
+/* Ajout et modification des fiches utilisateurs */
+.users-storage-note { font-size: 12px; color: #7a889c; line-height: 1.7; margin: -8px 0 16px; max-width: 740px; }
+.usersfeedback { font-size: 14px; color: #347d7e; margin: 0 0 16px; line-height: 1.6; }
+.usersfeedback:empty,.usererror:empty { display:none; }
+.userdialog { width: min(540px,calc(100vw - 32px)); max-height: calc(100dvh - 40px); padding: 30px; margin: auto; border: 1px solid #dfe6f0; border-radius: 15px; background: #fff; color: #293a56; box-shadow: 0 25px 85px #151b4433; overflow-y: auto; }
+.userdialog::backdrop { background: #1c294361; backdrop-filter: blur(3px); }
+.editorheading { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; }
+.editorheading h2 { font: 700 23px/1.4 Manrope,sans-serif; letter-spacing:-.7px; margin-top:8px; }
+.editorheading .eyebrow { font-size:11px; }
+.editorclose { width:32px; height:32px; border:0; border-radius:7px; background:#f2f5fa; color:#71829c; font-size:24px; line-height:1; flex-shrink:0; }
+.editornote { font-size:14px; color:#7c899d; line-height:1.7; margin:14px 0 24px; }
+.editorfield { display:grid; gap:8px; margin-bottom:19px; }
+.editorfield label { display:flex; justify-content:space-between; gap:12px; font-size:14px; color:#4d607e; font-weight:500; }
+.editorfield label span { color:#8a96a9; font-size:12px; font-weight:400; }
+.editorfield input,.editorfield select { width:100%; min-width:0; font:inherit; font-size:16px; padding:12px; border:1px solid #dce4ef; background:#f8fafd; border-radius:7px; color:#293c5a; outline:none; }
+.editorfield input:focus,.editorfield select:focus { border-color:#718bbc; box-shadow:0 0 0 3px #456ba218; background:#fff; }
+.editorfield input::placeholder { color:#9ba7b9; }
+.editorgrid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.userrights { background:#edf3f7; color:#526d7d; padding:12px 14px; border-radius:7px; font-size:13px; line-height:1.7; }
+.usererror { color:#9d384c; background:#fff1f3; padding:12px 14px; border-radius:7px; font-size:14px; line-height:1.6; margin-top:14px; }
+.editoractions { display:flex; justify-content:flex-end; gap:12px; margin-top:26px; padding-top:21px; border-top:1px solid #e6ebf3; }
+.editoractions button { font-size:14px; padding:12px 17px; }
+.secondary { border:1px solid #dce4ee; border-radius:7px; background:#fff; color:#647994; }
+.secondary:hover { background:#f0f4fa; }
+@media(max-width:520px) { .userdialog{padding:23px 20px}.editorheading h2{font-size:21px}.editorgrid{grid-template-columns:1fr;gap:0}.editoractions{flex-wrap:wrap}.editoractions button{flex:1}.editoractions .primary{white-space:normal} }
