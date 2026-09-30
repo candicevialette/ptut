@@ -233,38 +233,57 @@ function showRoute() {
     window.scrollTo(0, 0);
 }
 
-// Menu Profil Popover & formulaires
+// Profil : ouverture, fermeture et navigation au clavier.
 document.addEventListener('DOMContentLoaded', () => {
     selectDevice(selected.id);
     renderDashboard();
     showRoute();
 
-    const avatarBtn = document.getElementById('avatarBtn');
-    const profileMenu = document.getElementById('profileMenu');
-    const passForm = document.getElementById('changePasswordForm');
+    const avatarBtn = $('avatarBtn');
+    const profileMenu = $('profileMenu');
+    const passForm = $('changePasswordForm');
+    const message = $('passwordMessage');
+    if (!avatarBtn || !profileMenu) return;
 
-    if (avatarBtn && profileMenu) {
-        avatarBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            profileMenu.hidden = !profileMenu.hidden;
-            avatarBtn.setAttribute('aria-expanded', !profileMenu.hidden);
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!profileMenu.contains(e.target) && e.target !== avatarBtn) {
-                profileMenu.hidden = true;
-                avatarBtn.setAttribute('aria-expanded', 'false');
-            }
-        });
+    function closeProfile(restoreFocus = false) {
+        profileMenu.hidden = true;
+        avatarBtn.setAttribute('aria-expanded', 'false');
+        avatarBtn.setAttribute('aria-label', 'Ouvrir mon profil');
+        passForm?.reset();
+        if (message) message.textContent = 'Démonstration : aucun mot de passe ne sera modifié.';
+        if (restoreFocus) avatarBtn.focus();
     }
 
-    if (passForm) {
-        passForm.addEventListener('submit', e => {
-            e.preventDefault();
-            alert('Mot de passe mis à jour !');
-            if (profileMenu) profileMenu.hidden = true;
-        });
-    }
+    avatarBtn.addEventListener('click', () => {
+        if (!profileMenu.hidden) { closeProfile(true); return; }
+        profileMenu.hidden = false;
+        avatarBtn.setAttribute('aria-expanded', 'true');
+        avatarBtn.setAttribute('aria-label', 'Fermer mon profil');
+        $('closeProfile')?.focus();
+    });
+    $('closeProfile')?.addEventListener('click', () => closeProfile(true));
+    document.addEventListener('click', event => {
+        if (!profileMenu.hidden && !event.target.closest('.userprofile')) closeProfile();
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !profileMenu.hidden) {
+            event.preventDefault();
+            closeProfile(true);
+        }
+    });
+    document.querySelector('.userprofile').addEventListener('focusout', event => {
+        if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) closeProfile();
+    });
+    window.addEventListener('hashchange', () => closeProfile());
+
+    // Aucun serveur d'authentification n'est fourni dans cette maquette.
+    // Ne pas enregistrer ni transmettre les mots de passe dans le navigateur.
+    passForm?.addEventListener('submit', event => {
+        event.preventDefault();
+        if (!passForm.reportValidity()) return;
+        passForm.reset();
+        message.textContent = 'Modification indisponible dans la démonstration. Le formulaire doit être relié au serveur d’authentification.';
+    });
 });
 
 window.addEventListener('hashchange', showRoute);
