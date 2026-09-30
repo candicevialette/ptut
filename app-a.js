@@ -1,14 +1,32 @@
+// VARIABLES ÉQUIPEMENTS : remplacer ces valeurs par celles de votre projet.
 const devices = [
-    { id: 'rt-core', name: 'RT-CORE-01', type: 'router', ip: '192.168.10.1', brand: 'Cisco', model: 'ISR 4331', location: 'Siège · Baie principale', os: 'IOS XE 17.9' },
-    { id: 'rt-edge', name: 'RT-EDGE-02', type: 'router', ip: '192.168.10.2', brand: 'MikroTik', model: 'CCR2004', location: 'Siège · Accès WAN', os: 'RouterOS 7.15' },
-    { id: 'sw-core', name: 'SW-CORE-01', type: 'switch', ip: '192.168.10.10', brand: 'Cisco', model: 'Catalyst 9200', location: 'Siège · Baie principale', os: 'IOS XE 17.9' },
-    { id: 'sw-access', name: 'SW-ACCESS-02', type: 'switch', ip: '192.168.10.11', brand: 'Aruba', model: 'CX 6200F', location: 'Siège · Étage 1', os: 'AOS-CX 10.13' },
-    { id: 'fw-main', name: 'FW-MAIN-01', type: 'firewall', ip: '192.168.10.254', brand: 'Fortinet', model: 'FortiGate 60F', location: 'Siège · Périmètre réseau', os: 'FortiOS 7.4' },
-    { id: 'fw-backup', name: 'FW-BACKUP-02', type: 'firewall', ip: '192.168.10.253', brand: 'Netgate', model: '4200', location: 'Siège · Secours', os: 'pfSense Plus 24.03' }
+    { id: 'rt-core', name: 'RT-CORE-01', type: 'router', ip: '192.168.10.1', brand: 'Cisco', model: 'ISR 4331', protocol: 'SSH', port: 22, location: 'Siège · Baie principale', os: 'IOS XE 17.9' },
+    { id: 'rt-edge', name: 'RT-EDGE-02', type: 'router', ip: '192.168.10.2', brand: 'MikroTik', model: 'CCR2004', protocol: 'SSH', port: 22, location: 'Siège · Accès WAN', os: 'RouterOS 7.15' },
+    { id: 'sw-core', name: 'SW-CORE-01', type: 'switch', ip: '192.168.10.10', brand: 'Cisco', model: 'Catalyst 9200', protocol: 'SSH', port: 22, location: 'Siège · Baie principale', os: 'IOS XE 17.9' },
+    { id: 'sw-access', name: 'SW-ACCESS-02', type: 'switch', ip: '192.168.10.11', brand: 'Aruba', model: 'CX 6200F', protocol: 'SSH', port: 22, location: 'Siège · Étage 1', os: 'AOS-CX 10.13' },
+    { id: 'fw-main', name: 'FW-MAIN-01', type: 'firewall', ip: '192.168.10.254', brand: 'Fortinet', model: 'FortiGate 60F', protocol: 'SSH', port: 22, location: 'Siège · Périmètre réseau', os: 'FortiOS 7.4' },
+    { id: 'fw-backup', name: 'FW-BACKUP-02', type: 'firewall', ip: '192.168.10.253', brand: 'Netgate', model: '4200', protocol: 'SSH', port: 22, location: 'Siège · Secours', os: 'pfSense Plus 24.03' }
 ];
+
+// VARIABLES GÉNÉRALES ET PROFIL : aucune authentification implémentée ici.
+const site = { name: 'Nodus', companyName: 'NOM DE L’ENTREPRISE', version: 'v0.1' };
+const currentUser = { id: 'admin-system', userID: 'admin', name: 'Admin Système', role: 'admin' };
+const roles = {admin:'Super Admin',operator:'Opérateur',readonly:'Lecture seule'};
+const rights = {admin:'Administration complète des équipements et des utilisateurs.',operator:'Administration des équipements, sans gestion des utilisateurs.',readonly:'Consultation des équipements, sans modification.'};
+// VARIABLES UTILISATEURS : id = clé stable ; userID = nom de connexion (pas une adresse mail).
+let users = [
+{id:'admin-system',name:'Admin Système',userID:'admin',role:'admin',active:true,lastLogin:null},
+{id:'network-tech',name:'Technicien Réseau',userID:'tech',role:'operator',active:true,lastLogin:null},
+{id:'security-audit',name:'Auditeur Sécurité',userID:'audit',role:'readonly',active:false,lastLogin:null}
+];
+// VARIABLES SHELL : points de repère pour votre futur programme, sans transport réseau.
+const shell = { sessionId: null, command: '', output: '', error: '' };
+// Compteurs calculés à partir de devices par renderDashboard().
+const dashboard = { total: 0, byType: [], byBrand: [] };
 
 const groups = [['router', 'Routeurs', 'ROUTEUR'], ['switch', 'Switchs', 'SWITCH'], ['firewall', 'Pare-feu', 'PARE-FEU']];
 let selected = devices[0];
+// État d’affichage uniquement : à alimenter après une vraie connexion côté serveur.
 let connected = false;
 let history = [];
 let historyIndex = 0;
@@ -45,6 +63,7 @@ function selectDevice(id) {
     if ($('deviceIp'))$('deviceIp').textContent = d.ip;
     if ($('bottomIp'))$('bottomIp').textContent = d.ip;
     if ($('deviceModel'))$('deviceModel').textContent = d.brand + ' ' + d.model;
+    ['deviceProtocol','terminalProtocol','bottomProtocol'].forEach(id => { if ($(id)) $(id).textContent = d.protocol; });
     if ($('terminalName'))$('terminalName').textContent = d.name;
     if ($('breadcrumbDevice'))$('breadcrumbDevice').textContent = d.name;
     if ($('breadcrumbType'))$('breadcrumbType').textContent = groups.find(g => g[0] === d.type)[1];
@@ -72,6 +91,7 @@ function updateConnection() {
 }
 
 function line(text, cls = '') {
+    shell.output = String(text); // Dernier texte reçu/affiché ; le journal visuel est #log.
     const el = document.createElement('div');
     el.className = 'logline ' + cls;
     el.textContent = text;
@@ -112,6 +132,7 @@ document.addEventListener('keydown', e => {
 });
 
 function runCommand(raw) {
+    shell.command = raw; // À transmettre plus tard par votre programme ; aucun envoi ici.
     if (!raw.trim()) return;
     line('Aucune session SSH active. Configurez la passerelle serveur pour exécuter des commandes.', 'muted');
 }
@@ -141,6 +162,26 @@ function renderDashboard() {
         count: devices.filter(d => d.type === type).length
     }));
 
+    dashboard.total = total;
+    dashboard.byType = counts;
+    const brands = new Map();
+    devices.forEach(d => brands.set(d.brand, (brands.get(d.brand) || 0) + 1));
+    dashboard.byBrand = [...brands].map(([brand, count]) => ({brand, count}));
+    if ($('brandChart')) {
+        $('brandChart').replaceChildren();
+        dashboard.byBrand.forEach(({brand, count}, index) => {
+            const item = document.createElement('div'); item.className = 'chartitem';
+            const label = document.createElement('div'); label.className = 'chartlabel';
+            const title = document.createElement('span'); title.textContent = brand;
+            const value = document.createElement('span'); value.className = 'chartcount'; value.textContent = count + ' machine' + (count > 1 ? 's' : '');
+            label.append(title, value);
+            const bg = document.createElement('div'); bg.className = 'barbg';
+            const bar = document.createElement('div'); bar.className = 'barfill';
+            bar.style.width = (total ? count / total * 100 : 0) + '%';
+            bar.style.backgroundColor = ['#456ba2','#454096','#46969d'][index % 3];
+            bg.append(bar); item.append(label, bg); $('brandChart').append(item);
+        });
+    }
     if ($('sidebarTotal'))$('sidebarTotal').textContent = total;
     
     if ($('machineStats')) {$('machineStats').innerHTML = '<div class="statcard totalstat"><span>Total des machines</span><strong>' + total + '</strong><small>Équipements répertoriés</small></div>' + 
@@ -208,6 +249,15 @@ function showRoute() {
 
 // Profil : ouverture, fermeture et navigation au clavier.
 document.addEventListener('DOMContentLoaded', () => {
+    $('companyName').textContent = site.companyName;
+    $('footerName').textContent = site.name + ' CONSOLE';
+    $('appVersion').textContent = site.version;
+    $('profileName').textContent = currentUser.name;
+    $('profileUserID').textContent = currentUser.userID;
+    $('profileRole').textContent = roles[currentUser.role];
+    $('profileBadge').textContent = roles[currentUser.role];
+    $('profileRights').textContent = rights[currentUser.role];
+    $('avatarBtn').textContent = currentUser.name.split(/\s+/).map(part => part[0]).slice(0,2).join('').toUpperCase();
     selectDevice(selected.id);
     renderDashboard();
     showRoute();
@@ -253,7 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('hashchange', () => closeProfile());
 
     // Brancher ici le service d'authentification avant la mise en production.
-    // Ne pas enregistrer ni transmettre les mots de passe dans le navigateur.
+    // Champs à lire lors du futur branchement : $('currentPass').value et $('newPass').value.
+    // Ne jamais conserver les mots de passe dans une variable globale ou localStorage.
     passForm?.addEventListener('submit', event => {
         event.preventDefault();
         if (!passForm.reportValidity()) return;
@@ -291,24 +342,18 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
 // Gestion locale des fiches utilisateurs. Aucun mot de passe ni droit serveur
 // n'est stocké ici. Remplacer ce stockage par une API authentifiée en production.
 (() => {
-    const KEY = 'nodus.users.v1';
-    const roles = {admin: 'Super Admin', operator: 'Opérateur', readonly: 'Lecture seule'};
-    const rights = {admin: 'Administration complète des équipements et des utilisateurs.', operator: 'Administration des équipements, sans gestion des utilisateurs.', readonly: 'Consultation des équipements, sans modification.'};
-    const initial = [
-        {id:'admin-system', name:'Admin Système', userID:'admin', role:'admin', active:true, lastLogin:null},
-        {id:'network-tech', name:'Technicien Réseau', userID:'tech', role:'operator', active:true, lastLogin:null},
-        {id:'security-audit', name:'Auditeur Sécurité', userID:'audit', role:'readonly', active:false, lastLogin:null}
-    ];
+    // Clé distincte pour préserver les anciennes fiches contenant des e-mails.
+    const KEY = 'nodus.users.userID.v2';
     const dialog = document.getElementById('userDialog');
     const form = document.getElementById('userEditor');
     const table = document.getElementById('userRows');
     const feedback = document.getElementById('usersFeedback');
     const error = document.getElementById('userError');
     const name = document.getElementById('userName');
-    const userID = document.getElementById('useruserID');
+    const userID = document.getElementById('userID');
     const role = document.getElementById('userRole');
     const status = document.getElementById('userStatus');
-    let users = initial.map(user => ({...user}));
+
     let snapshot = null;
     let editing = null;
     let opener = null;
@@ -317,7 +362,7 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
     function validRows(rows) {
         return Array.isArray(rows) && rows.length > 0 && rows.every(user =>
             user && typeof user.id === 'string' && typeof user.name === 'string' && user.name.trim() &&
-            typeof user.userID === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.userID) &&
+            typeof user.userID === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9._-]{2,63}$/.test(user.userID) &&
             Object.hasOwn(roles, user.role) && typeof user.active === 'boolean' &&
             (user.lastLogin === null || (typeof user.lastLogin === 'string' && !Number.isNaN(Date.parse(user.lastLogin))))
         ) && new Set(rows.map(u=>u.id)).size === rows.length &&
@@ -381,7 +426,7 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
     form.addEventListener('submit',event=>{
         event.preventDefault();name.value=name.value.trim();userID.value=userID.value.trim().toLowerCase();
         name.setCustomValidity(name.value?'':'Saisissez un nom.');
-        userID.setCustomValidity(users.some(u=>u.userID.trim().toLowerCase()===userID.value && u.id!==editing)?'Cette adresse e-mail est déjà utilisée.':'');
+        userID.setCustomValidity(users.some(u=>u.userID.trim().toLowerCase()===userID.value && u.id!==editing)?'Cet identifiant est déjà utilisé.':'');
         if (!form.reportValidity()) return;
         if (!storageOK) {error.textContent='Le stockage local n’est pas disponible. Aucune modification n’a été enregistrée.';return;}
         const old=users.find(u=>u.id===editing);
@@ -398,4 +443,5 @@ document.getElementById('changePasswordForm')?.addEventListener('reset', () => {
     window.addEventListener('hashchange',()=>{if(dialog.open)closeEditor();});
     render();
 })();
+
 

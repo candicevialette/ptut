@@ -6,8 +6,8 @@
         <meta name="description" content="Nodus, votre espace d’administration réseau. Console multi-équipements.">
         <title>Nodus — Console réseau</title>
         <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23394799'/%3E%3Cpath d='M7 23 16 8l9 15M11 18h10' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
-        <link rel="stylesheet" href="style.css?v=20260930-5">
-        <script src="app-a.js?v=20260930-5" defer></script>
+        <link rel="stylesheet" href="style.css?v=20260930-variables">
+        <script src="app-a.js?v=20260930-variables" defer></script>
         <style>#profileMenu[hidden] { display: none !important; }</style>
     </head>
     <body>
@@ -35,18 +35,18 @@
                         <div class="profilepopover" id="profileMenu" role="dialog" aria-labelledby="profileName" hidden>
                             <button type="button" id="closeProfile" class="profileclose" aria-label="Fermer mon profil">×</button>
                             <div class="popoverheader">
-                                <span class="userbadge">Super Admin</span>
+                                <span class="userbadge" id="profileBadge">Super Admin</span>
                                 <h3 id="profileName">Alex Dupont</h3>
-                                <p>alex.dupont@nodus.local</p>
+                                <p id="profileUserID"></p>
                             </div>
                             <div class="popoverdetails">
                                 <div class="detailrow">
                                     <span>Rôle :</span>
-                                    <strong>Administrateur Système</strong>
+                                    <strong id="profileRole"></strong>
                                 </div>
                                 <div class="detailrow">
                                     <span>Droits :</span>
-                                    <strong>Accès complet (RW)</strong>
+                                    <strong id="profileRights"></strong>
                                 </div>
                             </div>
                             <hr class="popoverdivider">
@@ -71,7 +71,7 @@
             <div class="layout">
                 <aside class="sidebar">
                     <div class="sideintro">
-                        <span class="eyebrow">NOM DE L’ENTREPRISE</span>
+                        <span class="eyebrow" id="companyName"></span>
                         <h2>
                             Équipements <span id="sidebarTotal"></span>
                         </h2>
@@ -89,7 +89,7 @@
                     <nav id="devices" aria-label="Équipements réseau"></nav>
                     <div class="sidebarfooter">
                         
-                        Nodus CONSOLE <span>v0.1</span>
+                        <span id="footerName"></span><span id="appVersion"></span>
                     </div>
                 </aside>
 
@@ -117,36 +117,8 @@
                             <section class="chartpanel" aria-labelledby="brandChartTitle">
                                 <h2 id="brandChartTitle">Répartition des machines</h2>
                                 <p>Nombre d’équipements par marque</p>
-                                <div class="machinechart">
-                                    <div class="chartitem">
-                                        <div class="chartlabel">
-                                            <span>Cisco</span>
-                                            <span class="chartcount">3 machines</span>
-                                        </div>
-                                        <div class="barbg">
-                                            <div class="barfill cisco" style="width: 50%;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="chartitem">
-                                        <div class="chartlabel">
-                                            <span>Stormshield</span>
-                                            <span class="chartcount">2 machines</span>
-                                        </div>
-                                        <div class="barbg">
-                                            <div class="barfill stormshield" style="width: 33%;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="chartitem">
-                                        <div class="chartlabel">
-                                            <span>MikroTik</span>
-                                            <span class="chartcount">1 machine</span>
-                                        </div>
-                                        <div class="barbg">
-                                            <div class="barfill mikrotik" style="width: 17%;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="chartcaption">Les chiffres correspondent à l’inventaire affiché.</p>
+                                <div id="brandChart" class="machinechart"></div>
+<p class="chartcaption">Les chiffres correspondent à l’inventaire affiché.</p>
                             </section>
 
                             <!-- Liste des équipements -->
@@ -207,7 +179,7 @@
                                 </div>
                                 <div>
                                     <span>Protocole</span>
-                                    <strong>SSH</strong>
+                                    <strong id="deviceProtocol"></strong>
                                 </div>
                             </div>
                             <div class="connectarea">
@@ -221,7 +193,7 @@
                                 <div class="terminaltab">
                                     <span class="terminalglyph">›_</span>
                                     <strong id="terminalName"></strong>
-                                    <span class="tabkind">SSH</span>
+                                    <span class="tabkind" id="terminalProtocol"></span>
                                 </div>
                                 <div class="consoleactions">
                                     <button id="clear" aria-label="Effacer le terminal" title="Effacer le terminal">Effacer</button>
@@ -249,7 +221,7 @@
                                 </span>
                                 <span>
                                     UTF-8 <b>·</b>
-                                    SSH <b>·</b>
+                                    <span id="bottomProtocol"></span> <b>·</b>
                                     <span id="bottomIp"></span>
                                 </span>
                             </div>
@@ -269,7 +241,7 @@
         <div class="editorheading"><div><p class="eyebrow">UTILISATEURS ET ACCÈS</p><h2 id="userDialogTitle">Ajouter un utilisateur</h2></div><button id="closeUser" type="button" class="editorclose" aria-label="Fermer le formulaire">×</button></div>
         <p id="userDialogNote" class="editornote">Renseignez l’identité et les droits souhaités pour cette fiche utilisateur.</p>
         <div class="editorfield"><label for="userName">Nom complet <span>Obligatoire</span></label><input id="userName" name="name" maxlength="100" autocomplete="name" required placeholder="Ex. Camille Martin"></div>
-        <div class="editorfield"><label for="userID">Nom d'utilisateur<span>Obligatoire</span></label><input id="userID" name="userID" type="userID" maxlength="254" autocomplete="userID" required placeholder="camille"></div>
+        <div class="editorfield"><label for="userID">Nom d'utilisateur<span>Obligatoire</span></label><input id="userID" name="userID" type="text" minlength="3" maxlength="64" pattern="[a-zA-Z0-9][a-zA-Z0-9._\-]{2,63}" autocomplete="username" required placeholder="camille"></div>
         <div class="editorgrid"><div class="editorfield"><label for="userRole">Rôle</label><select id="userRole" name="role" aria-describedby="userRights"><option value="readonly">Lecture seule</option><option value="operator">Opérateur</option><option value="admin">Super Admin</option></select></div><div class="editorfield"><label for="userStatus">Statut</label><select id="userStatus" name="status"><option value="active">Actif</option><option value="inactive">Inactif</option></select></div></div>
         <p id="userRights" class="userrights"></p><p id="userError" class="usererror" role="alert"></p>
         <div class="editoractions"><button id="cancelUser" class="secondary" type="button">Annuler</button><button id="saveUser" class="primary" type="submit">Ajouter l’utilisateur</button></div>
