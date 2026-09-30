@@ -29,12 +29,13 @@
                     
                     <!-- Menu Profil / AD avec Popover -->
                     <div class="userprofile">
-                        <button type="button" class="avatar" id="avatarBtn" aria-expanded="false" aria-controls="profileMenu" title="Espace administrateur">AD</button>
+                        <button type="button" class="avatar" id="avatarBtn" aria-expanded="false" aria-controls="profileMenu" aria-haspopup="dialog" aria-label="Ouvrir mon profil" title="Espace administrateur">AD</button>
                         
-                        <div class="profilepopover" id="profileMenu" hidden>
+                        <div class="profilepopover" id="profileMenu" role="dialog" aria-labelledby="profileName" hidden>
+                            <button type="button" id="closeProfile" class="profileclose" aria-label="Fermer mon profil">×</button>
                             <div class="popoverheader">
                                 <span class="userbadge">Super Admin</span>
-                                <h3>Alex Dupont</h3>
+                                <h3 id="profileName">Alex Dupont</h3>
                                 <p>alex.dupont@nodus.local</p>
                             </div>
                             <div class="popoverdetails">
@@ -52,13 +53,14 @@
                                 <h4>Changer le mot de passe</h4>
                                 <div class="fieldgroup">
                                     <label for="currentPass">Mot de passe actuel</label>
-                                    <input type="password" id="currentPass" required placeholder="••••••••">
+                                    <input type="password" id="currentPass" autocomplete="current-password" required placeholder="••••••••">
                                 </div>
                                 <div class="fieldgroup">
                                     <label for="newPass">Nouveau mot de passe</label>
-                                    <input type="password" id="newPass" required placeholder="••••••••">
+                                    <input type="password" id="newPass" autocomplete="new-password" required placeholder="••••••••">
                                 </div>
                                 <button type="submit" class="primary btnblock">Mettre à jour</button>
+                                <p id="passwordMessage" class="profilemessage" role="status" aria-live="polite">Démonstration : aucun mot de passe ne sera modifié.</p>
                             </form>
                         </div>
                     </div>
