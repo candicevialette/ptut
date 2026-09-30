@@ -3,18 +3,18 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta name="description" content="Nodus, votre espace d’administration réseau. Maquette interactive de console multi-équipements.">
+        <meta name="description" content="Nodus, votre espace d’administration réseau. Console multi-équipements.">
         <title>Nodus — Console réseau</title>
         <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23394799'/%3E%3Cpath d='M7 23 16 8l9 15M11 18h10' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
-        <link rel="stylesheet" href="style.css?v=20260930-3">
-        <script src="app-a.js?v=20260930-3" defer></script>
+        <link rel="stylesheet" href="style.css?v=20260930-4">
+        <script src="app-a.js?v=20260930-4" defer></script>
         <style>#profileMenu[hidden] { display: none !important; }</style>
     </head>
     <body>
         <div id="administration">
             <header class="topbar">
                 <a class="brand" href="#dashboard" aria-label="Nodus, accueil">
-                    <img src="logo.png" alt="Nodus" class="brandlogo">
+                    <img src="logo.png" alt="Nodus" class="brandlogo" width="72" height="74">
                 </a>
                 <nav class="workspace" aria-label="Fil d’Ariane">
                     Administration <span>/</span>
@@ -61,7 +61,7 @@
                                     <div class="passwordcontrol"><input type="password" id="newPass" autocomplete="new-password" required placeholder="Saisir un nouveau mot de passe"><button type="button" class="passwordtoggle" data-password="newPass" aria-controls="newPass" aria-pressed="false" aria-label="Afficher le nouveau mot de passe" title="Afficher le nouveau mot de passe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m3 3 18 18"/></svg></button></div>
                                 </div>
                                 <button type="submit" class="primary btnblock">Mettre à jour</button>
-                                <p id="passwordMessage" class="profilemessage" role="status" aria-live="polite">Démonstration : aucun mot de passe ne sera modifié.</p>
+                                <p id="passwordMessage" class="profilemessage" role="status" aria-live="polite"></p>
                             </form>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                                 <p class="eyebrow">VOTRE INFRASTRUCTURE</p>
                                 <h1 id="dashboardTitle">Tableau de bord</h1>
                             </div>
-                            <span class="dashnote">Inventaire de démonstration</span>
+                            
                         </div>
                         <div id="machineStats" class="machinestats"></div>
                         <div class="dashpanels">
@@ -245,7 +245,7 @@
                                 </button>
                             </div>
                         </section>
-                        <section class="console" aria-label="Console de démonstration">
+                        <section class="console" aria-label="Console réseau">
                             <div class="consoletoolbar">
                                 <div class="terminaltab">
                                     <span class="terminalglyph">›_</span>
@@ -262,12 +262,12 @@
                                     <span class="terminalbadge">Nodus / TERMINAL</span>
                                     <h3>Une fenêtre sur votre réseau.</h3>
                                     <p>Ouvrez une session pour explorer cet équipement.</p>
-                                    <p class="terminalnotice">Démonstration interactive · aucune connexion réseau réelle</p>
+                                    
                                 </div>
                                 <div id="log" role="log" aria-live="polite" aria-label="Historique du terminal"></div>
                                 <form id="commandForm" class="commandline" hidden>
                                     <label for="command" id="prompt"></label>
-                                    <input id="command" autocomplete="off" spellcheck="false" aria-label="Commande du terminal simulé" placeholder="Saisissez help pour commencer">
+                                    <input id="command" autocomplete="off" spellcheck="false" aria-label="Commande du terminal" placeholder="Saisissez une commande">
                                     <button type="submit" aria-label="Exécuter la commande">↵</button>
                                 </form>
                             </div>
@@ -278,27 +278,11 @@
                                 </span>
                                 <span>
                                     UTF-8 <b>·</b>
-                                    SSH simulé <b>·</b>
+                                    SSH <b>·</b>
                                     <span id="bottomIp"></span>
                                 </span>
                             </div>
                         </section>
-                        <div class="underconsole">
-                            <div>
-                                <span class="helpicon">i</span>
-                                <p>
-                                    <strong>Essayez votre console.</strong>
-                                    Connectez-vous, puis saisissez <code>help</code>
-                                    pour afficher les commandes.
-                                </p>
-                            </div>
-                            <span class="keyhint">
-                                <kbd>Entrée</kbd>
-                                exécuter <span>·</span>
-                                <kbd>↑</kbd>
-                                historique
-                            </span>
-                        </div>
                         <footer class="mainfooter">
                             <span>Conçu pour garder le contrôle.</span>
                             <div class="palette" aria-label="Palette ardoise">

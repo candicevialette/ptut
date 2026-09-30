@@ -63,7 +63,7 @@ function selectDevice(id) {
 
 function updateConnection() {
     if ($('connect'))$('connect').innerHTML = connected ? 'Déconnecter <span>↗</span>' : 'Connecter <span>↗</span>';
-    if ($('bottomState'))$('bottomState').textContent = connected ? 'Connecté · démonstration' : 'Prêt à se connecter';
+    if ($('bottomState'))$('bottomState').textContent = connected ? 'Connecté' : 'Prêt à se connecter';
     if ($('statusDot'))$('statusDot').classList.toggle('active', connected);
     if ($('commandForm'))$('commandForm').hidden = !connected;
     
@@ -79,21 +79,13 @@ function line(text, cls = '') {
     if ($('terminalBody')) $('terminalBody').scrollTop =$('terminalBody').scrollHeight;
 }
 
+// Une session réelle nécessite une passerelle SSH côté serveur.
 function toggleConnection() {
-    connected = !connected;
-    if (connected) {
-        if ($('log'))$('log').replaceChildren();
-        line('AZUR · SESSION DE DÉMONSTRATION', 'muted');
-        line('Connexion simulée à ' + selected.ip + ' sur le port 22…', 'muted');
-        line('Session ouverte sur ' + selected.name + '.', 'success');
-        line(selected.brand + ' ' + selected.model + ' / ' + selected.os, 'muted');
-        line('Aucune commande ne sera transmise à un équipement réel.', 'muted');
-        line('Saisissez help pour consulter les commandes disponibles.');
-    } else {
-        line('Session de démonstration fermée.', 'muted');
-    }
+    connected = false;
+    if ($('log')) $('log').replaceChildren();
+    line('Service SSH non configuré. Impossible d’ouvrir une session sur ' + selected.name + '.', 'muted');
     updateConnection();
-    if (connected && $('command'))$('command').focus();
+    if ($('bottomState')) $('bottomState').textContent = 'Service SSH non configuré';
 }
 
 if ($('connect'))$('connect').addEventListener('click', toggleConnection);
@@ -120,36 +112,8 @@ document.addEventListener('keydown', e => {
 });
 
 function runCommand(raw) {
-    if (!connected) return;
-    const c = raw.trim();
-    if (!c) return;
-
-    history.push(c);
-    historyIndex = history.length;
-    line(selected.name.toLowerCase() + ' # ' + c, 'command');
-
-    switch (c.toLowerCase()) {
-        case 'help':
-            line('Commandes de démonstration :\n  show version       Modèle et version du système\n  show interfaces    Interfaces et adresses IP\n  show hostname      Nom de l’équipement\n  clear              Effacer le terminal\n  exit               Fermer la session', 'muted');
-            break;
-        case 'show version':
-            line(selected.brand + ' ' + selected.model + '\nSystème : ' + selected.os + '\nDisponibilité simulée : 12 jours, 04:32');
-            break;
-        case 'show interfaces':
-            line('Interface     Adresse IP         État\n────────────  ─────────────────  ────\nManagement    ' + selected.ip.padEnd(17) + '  UP\nEthernet 1    10.0.0.1           UP\nEthernet 2    Non attribuée      DOWN');
-            break;
-        case 'show hostname':
-            line(selected.name);
-            break;
-        case 'clear':
-            if ($('log'))$('log').replaceChildren();
-            break;
-        case 'exit':
-            toggleConnection();
-            break;
-        default:
-            line('Commande non prise en charge dans la démo. Saisissez help.', 'muted');
-    }
+    if (!raw.trim()) return;
+    line('Aucune session SSH active. Configurez la passerelle serveur pour exécuter des commandes.', 'muted');
 }
 
 if ($('commandForm')) {$('commandForm').addEventListener('submit', e => {
@@ -207,10 +171,19 @@ function renderDashboard() {
 
 // Gestion des vues selon l'URL (Routage)
 function showRoute() {
-    const hash = location.hash || '#dashboard';
+    const hash = ['#dashboard', '#users', '#console'].includes(location.hash) ? location.hash : '#dashboard';
     const isDash = hash === '#dashboard';
     const isUsers = hash === '#users';
-    const isConsole = !isDash && !isUsers;
+    const isConsole = hash === '#console';
+    document.querySelectorAll('.devicebutton').forEach(button => {
+        const active = isConsole && button.dataset.id === selected.id;
+        button.classList.toggle('selected', active);
+        button.setAttribute('aria-pressed', String(active));
+    });
+    document.querySelectorAll('.sidenav .dashboardlink').forEach(link => {
+        if (link.getAttribute('href') === hash) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+    });
 
     if ($('dashboard'))$('dashboard').hidden = !isDash;
     if ($('users'))$('users').hidden = !isUsers;
@@ -253,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarBtn.setAttribute('aria-label', 'Ouvrir mon profil');
         passForm?.reset();
         ['currentPass', 'newPass'].forEach(id => { if ($(id)) { $(id).type = 'password'; $(id).value = ''; } });
-        if (message) message.textContent = 'Démonstration : aucun mot de passe ne sera modifié.';
+        if (message) message.textContent = '';
         if (restoreFocus) avatarBtn.focus();
     }
 
@@ -279,13 +252,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     window.addEventListener('hashchange', () => closeProfile());
 
-    // Aucun serveur d'authentification n'est fourni dans cette maquette.
+    // Brancher ici le service d'authentification avant la mise en production.
     // Ne pas enregistrer ni transmettre les mots de passe dans le navigateur.
     passForm?.addEventListener('submit', event => {
         event.preventDefault();
         if (!passForm.reportValidity()) return;
         passForm.reset();
-        message.textContent = 'Modification indisponible dans la démonstration. Le formulaire doit être relié au serveur d’authentification.';
+        message.textContent = 'Service d’authentification non configuré. Le mot de passe n’a pas été modifié.';
     });
 });
 
