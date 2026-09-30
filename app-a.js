@@ -178,12 +178,23 @@ function renderDashboard() {
     }));
 
     if ($('sidebarTotal'))$('sidebarTotal').textContent = total;
+    
     if ($('machineStats')) {$('machineStats').innerHTML = '<div class="statcard totalstat"><span>Total des machines</span><strong>' + total + '</strong><small>Équipements répertoriés</small></div>' + 
             counts.map(g => '<div class="statcard"><span>' + g.label + '</span><strong>' + g.count + '</strong><small>' + (total ? Math.round(g.count / total * 100) : 0) + ' % de l’inventaire</small></div>').join('');
     }
 
-    const max = Math.max(1, ...counts.map(g => g.count));
-    if ($('machineChart')) {$('machineChart').innerHTML = counts.map(g => '<div class="chartrow"><div><span>' + g.label + '</span><strong>' + g.count + ' machines</strong></div><div class="bartrack"><div class="bar ' + g.type + '" style="width:' + (g.count / max * 100) + '%"></div></div></div>').join('');
+    // Graphique gauche (Catégories) aligné sur le style du graphique droit
+    if ($('machineChart')) {$('machineChart').innerHTML = counts.map(g => `
+            <div class="chartitem">
+                <div class="chartlabel">
+                    <span>${g.label}</span>
+                    <span class="chartcount">${g.count} machine${g.count > 1 ? 's' : ''}</span>
+                </div>
+                <div class="barbg">
+                    <div class="barfill ${g.type}" style="width: ${total ? Math.round((g.count / total) * 100) : 0}%;"></div>
+                </div>
+            </div>
+        `).join('');
     }
 
     if ($('machineList')) {$('machineList').innerHTML = devices.map(d => '<button class="inventoryrow" data-machine="' + d.id + '"><span><strong>' + d.name + '</strong><small>' + d.brand + ' · ' + d.ip + '</small></span><span aria-hidden="true">↗</span></button>').join('');
